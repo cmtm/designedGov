@@ -1,0 +1,24 @@
+Name: Chris Morin
+
+ID:     260344722
+
+Project title: designedGov
+
+Group members: Chris Morin (Honors thesis)
+
+Project supervisor: Bettina Kemme (Computer Science)
+
+Intellectual property:
+  All work will be owned by me. Once the project gains traction I'll release it under an open-source liscence such as the LGPL.
+
+Non-disclosure agreement:
+	No NDA is required.
+
+Advisor meetings:
+	I've already met with the advisor to kick of the discussion about the project. Most communications will be via email, and we will meet when needed. I won't set up regular meetings as the ammount of advice I need from her will vary a lot as the project progresses.
+	
+Project requirements:
+	No lab space will be needed. All research and development will be done on my personal computer at home. I might need some server space to test the application next semester during implementation.
+
+Project abstract:
+	A thourough proposal (more of a manifesto) can be found in the file "proposal.txt". That document was written assuming the project goes beyond the scope of this course. I only expect to implement the bottom few layers of the application proposal properly. Since the higher layers are much more complex, I'll develop extremely simplified "toy" versions of them to be used as a proof of concept.
