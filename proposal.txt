@@ -18,10 +18,10 @@ Abstract
 
 I want to create an application which will simplify how a government interacts with the persons and organizations that wish to interact with it. There will be several layers in this application, each building upon the lower layer in a stack like fashion (think of the Internet protocol suite). The application will be secure, robust and be built with expandability for unforeseen future needs. This project will specifically be built with the Canadian government (and the governments below it) in mind but it will be very "government neutral" and should be easily adapted to other governments. From here on out, this application will be referred to as designedGov.
 
-To make things a little less abstract, a possible service of designedGov could keep track of a person/organization’s financial transactions and remove the need to "manually" file taxes. Another example would be a person having access to their entire medical history and medical service providers being able to access it instantaneously regardless of their geographical location. An important aspect of this application is that persons and organizations will be able to access almost all government services through a single online portal while only needing to keep track of a single set of account details (username and password).
+To make things a little less abstract, a possible service of designedGov could keep track of a person/organization's financial transactions and remove the need to "manually" file taxes. Another example would be a person having access to their entire medical history and medical service providers being able to access it instantaneously regardless of their geographical location. An important aspect of this application is that persons and organizations will be able to access almost all government services through a single online portal while only needing to keep track of a single set of account details (username and password).
 
 
-"I like writing software. I like trying to make things work better. In many ways, the end result is unimportant – it’s really just the excuse for the whole experience."
+"I like writing software. I like trying to make things work better. In many ways, the end result is unimportant - it's really just the excuse for the whole experience."
 	- Linus Torvald
 
 -----------
