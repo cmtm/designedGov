@@ -5,7 +5,7 @@ designedGov Pitch
 
 //////////////////////
 Contents:
-	-Abstract
+	-Introduction
 	-Definitions
 	-Justification of Need
 	-Guiding Principles
@@ -18,7 +18,7 @@ Contents:
 == Introduction
 I want to create an application which will simplify how a government interacts with the persons and organizations that wish to interact with it. The application will be secure, robust and be built with expandability for unforeseen future needs. This project will specifically be built with the Canadian governments in mind but it will be very "government neutral" and should be easily adapted to other governments. From here on out, this application will be referred to as designedGov. 
 
-To make things a little less abstract, a possible service of designedGov could keep track of a person/organization's financial transactions and remove the need to "manually" file taxes. Another example would be a person having access to their entire medical history and medical service providers being able to access it instantaneously regardless of their geographical location. An important aspect of this application is that persons and organizations will be able to access almost all government services through a single online portal while only needing to keep track of a single set of account details (username and password).
+To make things a little less abstract, a possible service of designedGov could keep track of a person/organization's financial transactions and remove the need to "manually" file taxes. Another example would be a person having access to their entire medical history and medical service providers being able to access it instantaneously regardless of their geographical location. An important aspect of this application is that persons and organizations will be able to access almost all government services through a single online portal while only needing to keep track of a single set of account details (user name and password).
 
 
 [quote, Linus Torvald, TechCrunch interview]
@@ -77,7 +77,7 @@ Simple. Consistent. Secure.
 === Principles:
 
 -Users will be given a single unique set of account details along with a single access point to most government services.
-	Since we are designing the system as a whole, we have this option and there is little reason for us not to take it. One could argue that having a single entry point into a person s entire "identity" is too vulnerable. That is fair, but I feel that implementing heuristic identity theft detection and teaching users about basic digital security would render it more secure than a multiple account system. Also, because of the way our system works, having multiple account systems just provides multiple points of vulnerability to someone's entire "identity" because they can use access to one account to gain access to others.
+	Since we are designing the system as a whole, we have this option and there is little reason for us not to take it. One could argue that having a single entry point into a person's  entire "identity" is too vulnerable. That is fair, but I feel that implementing heuristic identity theft detection and teaching users about basic digital security would render it more secure than a multiple account system. Also, because of the way our system works, having multiple account systems just provides multiple points of vulnerability to someone's entire "identity" because they can use access to one account to gain access to others.
 
 -The application stack will be free and open source.
 	I touched on this before. Considering the importance of this application, it would be safest to develop it in the public eye. This protects against both government incompetence and corruption (I'm not claiming they are incompetent or corrupt, but history has taught us that we must be ready for when they are).
@@ -107,7 +107,7 @@ I have my own vision for this application, but I acknowledge that some aspects m
 
 Ideally, all users would be well versed in cryptography and the specifics of the system. It is inevitable that some unknowing users will make mistakes that compromise their identity and even their financial well-being. We can always restrict the freedoms of users to prevent them from "shooting themselves in the foot". My personal view is that although there might be a few hitches at the beginning, designedGov will be part of everyday life and people will discuss and share amongst themselves best practices. Also, because of how an identity is centralized, a stolen identity would be very easily recovered and could be as easy as a password change. This will have to be discussed and debated.
 
-Next is how dependent we should be on it. Having the view that this application is more secure than our current systems, I believe that this should be the default form of government interaction. That being said, how much trust we should put in the safety of the system will be contentious. Would people be comfortable voting through this system? When someone authenticates themselves after completing a large transaction, should more traditional authentication methods be used (e.g. photo ID). The convenience provided by the system would follow "increasing returns" with additional trust as any human interaction would be a bottleneck in an autonomous system. The tradeoff is not unlike that of the previous paragraph.
+Next is how dependent we should be on it. Having the view that this application is more secure than our current systems, I believe that this should be the default form of government interaction. That being said, how much trust we should put in the safety of the system will be contentious. Would people be comfortable voting through this system? When someone authenticates themselves after completing a large transaction, should more traditional authentication methods be used (e.g. photo ID). The convenience provided by the system would follow "increasing returns" with additional trust as any human interaction would be a bottleneck in an autonomous system. The trade-off is not unlike that of the previous paragraph.
 
 === Privacy
 
@@ -117,7 +117,7 @@ With cryptography, we can guarantee that even though the government authenticate
 
 Perhaps a more practical solution would be to have each GO store user data associated with them on their servers. While they can access it at will, other GOs need permission. The governmental organization in charge of health could store and freely access a person's medical records (someone can't really give a password if they're unconscious in an ambulance) while say the organization in charge of tax collection would need a user's permission if they wanted to confirm you had a certain disability for tax benefits. Every time an account is accessed this information could be logged and this log could be made available to the user, but there is no way of guaranteeing an organization can't access their own data on a user without his permission in this system.
 
-Another point of contention is whether certain authorities should have access to a user s data and those accesses not be made known to the user (not logged). How much information should police have access to? Would a judge have the authority to pull information from any organization at the request of detectives for an investigation? Giving police the unrestricted ability to secretly read data would greatly ease investigations but would have many worried about them having too much power.
+Another point of contention is whether certain authorities should have access to a user's data and those accesses not be made known to the user (not logged). How much information should police have access to? Would a judge have the authority to pull information from any organization at the request of detectives for an investigation? Giving police the unrestricted ability to secretly read data would greatly ease investigations but would have many worried about them having too much power.
 
 Also, the government could provide a service that allows unrestricted or restricted access to anonymous data. This could lead to very interesting finds. For example, health records could be data mined and novel medical discoveries could be made like an unknown cause of a disease. Studies using traditional methods can take years and millions of dollars but this could be done in a few minutes and be virtually costless.
 
@@ -129,27 +129,34 @@ Finally we get to the good stuff. This is really just a top level view of how th
 The layers making up this application from top to bottom are as follows:
 
 -Web interface (optional)
--Organization plug-ins
--Plug-in framework (Agreed upon data sharing protocol and permissions)
--User authentication
+-Organization applications
+-Communication protocol
+-Central identity server
 -User definition
 
 I'll describe them from bottom to top.
 
 === User definition
-Each user, be they an organization or individual, will be given a unique number. The details of this number such as length are to be determined at a later time. Babies will be given numbers when born (under control of parents until a certain age), immigrants when they land and NGOs when they register themselves. The user will create a password and keep it to themselves. This password will never pass through an untrusted medium unencrypted.
+Each user, be they an organization or individual, will be given a unique number. The details of this number such as length are to be determined at a later time. Babies will be given numbers when born (under control of parents until a certain age), immigrants when they land and NGOs when they register themselves. Each user will also have their own public-private key pair. For those unfamiliar with cryptography, this pair allows a user to authenticate his identity to others.
 
-=== User authentication
-The user can use a central authoritative authentication server to prove their affiliation to their account. This proof is guaranteed as long as the user was responsible with their password and the physical authentication server hasn't been compromised.
+[NOTE]
+Notice how no password was mentioned. In an ideal world, no password would be needed as a user could always use their public-private key pair to authenticate their identity. In the real world though, we have to worry about users loosing and worse having their private key stolen. For this reason, it might be best for each user to have a password that is solely used for modifying their public key held by the central identity server (more about this below).
 
-=== Plug-in framework
-This consists of a protocol for allowing GO plug-ins to interact with each other. This protocol will have to be very flexible as it is likely unforeseen services will need plug-ins future plug-ins will need to be modified to take advantage of this new data. Also, here is defined how the permission system will work; this system ensures all data access is authorized. The user will have large control of these permissions and understanding this system will be paramount to the security of their account.
+=== Central identity server
+The central identity server is the authoritative server on who is who. It will simply contain a list of all existing user numbers and their associated public keys. Any user will be able to query it for the public key associated with a user number. The server might also contain additional user information such as what type of user it is (citizen, government organization, for profit company, ...) and their IP address if applicable. The central identity server will have it's own public-private key pair which is the only thing needed for a user to be able to authenticate the identities of other users. When user A claims to be the owner of a certain user identification number, a skeptical user B can query the central server for the public key of the number user A gave him. Using cryptography, user A and B can now authenticate user A's identity. The way this is done is quite technical but will be simple for the end user to use.
 
-=== Organization plug-ins
-GOs will be responsible for creating and hosting their own applications. They can develop them as they see fit, but their applications will need to communicate with designedGov via the plug-in framework. If they wish to use legacy systems, they will need to develop an intermediary application which translates information between the GO's legacy system and the plug-in framework.
+[NOTE]
+Although I said that the server could authenticate a user's identity, the astute reader will have noticed that it only matches a user number and a public key. All useful identity authentication (such as: "Is this woman standing at my door a detective as she claims") will then be done by the organization applications, but they will all need this initial exchange to occur.
+
+
+=== Communication protocol
+This consists of a protocol for allowing users (individuals and organizations) to interact with each other. This protocol will have to be very flexible as it is likely unforeseen functionality will be needed in the future. Also, here is defined how the permission system will work; this system ensures all data access is authorized. The user will have large control of these permissions and understanding this system will be paramount to the security of their account.
+
+=== Organization application
+GOs will be responsible for creating and hosting their own applications. They can develop them as they see fit, but their applications will need conform to the communication protocol for any external communication. If they wish to use legacy systems, they will need to develop an intermediary application which translates information between the GO's legacy system and the communication protocol.
 
 === Web interface
-On top of the most popular plug-ins, a web portal will be created which allows users to easily access these plug-ins through their accounts. This interface will also allow them to control who has permissions to their account. This will be a reference implementation, and I hope other interfaces will be created on different platforms. These interfaces can compete to be the most useable and to support the most GO plug-ins. Interfaces can be created to target specific niches like an interface for small businesses or an interface for speakers of a foreign language.
+On top of the most popular organizational applications, a web portal will be created which allows users to easily access these applications through their a single portal. This interface will also allow them to control who has permissions to their account. This will be a reference implementation, and I hope other interfaces will be created on different platforms. These interfaces can compete to be the most usable and to support the most organization applications. Interfaces can be created to target specific niches like an interface for small businesses or an interface for speakers of a foreign language.
 
 == Foreseen Challenges
 
@@ -159,4 +166,4 @@ The real challenge though, will be convincing the Canadian government and the pe
 
 == Hopes for the Future
 
-I hope designedGov becomes adopted by the Canada while still following most of the principles laid out here. I also hope this will greatly reduce the red tape and administrative costs associated with our government. If this happens, Canada will be a role model when it comes to integrating technology into society. If other countries implement similar systems, it would then be possible to develop a global system which would allow citizens from different countries to interact with each other.
+I hope designedGov becomes adopted by the Canada while still following most of the principles laid out here. I also hope this will greatly reduce the red tape and administrative costs associated with our government. If this happens, Canada will be a role model when it comes to integrating technology into society. If other countries implement similar systems, it would then be possible to develop a global system which would allow users from different countries to interact with each other.
