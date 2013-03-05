@@ -1,7 +1,7 @@
 designedGov Pitch
 =================
-:Chris Morin:
-:chris.morin2@gmail.com:
+Chris Morin <chris.morin2@gmail.com>
+
 
 //////////////////////
 Contents:
@@ -29,23 +29,32 @@ _______
 
 == Definitions
 
-government layer: Official administrative organization which manages a certain layer of a society (layers being federal, municipal, ...).
+Government layer::
+	Official administrative organization which manages a certain layer of a society (layers being federal, municipal, ...).
 
-government: When used without the term layer or without specifying a certain layer, government refers to all the layers of government.
+Government::
+	When used without the term layer or without specifying a certain layer, government refers to all the layers of government.
 
-organization: A group of persons, public or private which need to interact with the government as a single entity.
+Organization::
+	A group of persons, public or private which need to interact with the government as a single entity.
 
-GO (governmental organizations): The organizations that provide public services and owned by the state. These organizations are administered by the government.
+GO (governmental organizations)::
+	The organizations that provide public services and owned by the state. These organizations are administered by the government.
 
-NGO (non-governmental organizations): Same as GO but these are private organizations. This definition conflicts with the definition proposed by the United Nations as the UN definition excludes conventional for profit businesses. For this I may update the text if I come up with a better term.
+NGO (non-governmental organizations)::
+	Same as GO but these are private organizations. This definition conflicts with the definition proposed by the United Nations as the UN definition excludes conventional for profit businesses. For this I may update the text if I come up with a better term.
 
-person(s): Individual who needs to interact with a government. This can be citizens, exchange students, tourists, ... . Most of the time, these people are located in or have the intention of being located in the country of the government they wish to interact with. Otherwise, they would most likely interact with the government through an organization.
+Person(s)::
+	Individual who needs to interact with a government. This can be citizens, exchange students, tourists, ... . Most of the time, these people are located in or have the intention of being located in the country of the government they wish to interact with. Otherwise, they would most likely interact with the government through an organization.
 
-user: person or organization wishing to interact with a part of the government.
+User::
+	person or organization wishing to interact with a part of the government.
 
-application: A collection of software which works together to provide a service.
+Application::
+	A collection of software which works together to provide a service.
 
-account: representation of a user within an application. The application can remember user information and often provides a secure way of ensuring only authorized interaction with an account occurs.
+Account::
+	representation of a user within an application. The application can remember user information and often provides a secure way of ensuring only authorized interaction with an account occurs.
 
 == Justification of Need
 
@@ -128,11 +137,11 @@ I plan on implementing the "practical" solution, not because of its merits but b
 Finally we get to the good stuff. This is really just a top level view of how the different application pieces come together so many details have been omitted.
 The layers making up this application from top to bottom are as follows:
 
--Web interface (optional)
--Organization applications
--Communication protocol
--Central identity server
--User definition
+* Web interface (optional)
+* Organization applications
+* Communication protocol
+* Central identity server
+* User definition
 
 I'll describe them from bottom to top.
 
