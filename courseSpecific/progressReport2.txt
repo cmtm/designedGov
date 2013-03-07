@@ -1,0 +1,43 @@
+= Progress Report 2
+Chris Morin <christopher.morin@mail.mcgill.ca>
+
+== General Information
+
+ID::
+	260344722
+
+Project title::
+	designedGov
+
+Project supervisor::
+	Bettina Kemme (Computer Science)
+
+
+== Supervisor meetings
+
+I haven't met with my supervison since the last progress report. This is because I've spent most of the time learning technologies required to develop this application. I expect to meet with her soon regarding my recent application description draft.
+
+== Project Reading
+
+These past weeks, I focused on learning technologies needed to develop the application. Specifically, I completed the computer networking book [1] (at least the chapters I had the intention of reading) and have gotten into the Django Book [2]. Even though these are my two main references, I spent more time reading assorted wiki pages and technology forums to learn more about certain aspects from the books I felt would be particularly useful to me.
+
+I've also read a few short HTML5/CSS and Javascript tutorials. I did the same with SQL and read the reference manual for Asciidoc (a markup language). Once I'm done the django book, I'll dive into the application desiging stage so any more readings will be short and on an as-needed basis.
+
+
+[1] Kurose, James F., and Keith W. Ross. Computer networking: a top-down approach. 5th ed. Boston: Addison-Wesley, 2010.
+[2] http://www.djangobook.com
+
+
+== Recent Progress
+
+I converted my documentation to asciidoc to make them more aesthetically pleasing. I reworked my initial document and changed it's name to "designedGov pitch" to more accurately describe it. I started another document which is the application description. It's in it's draft form now and is missing a few sections, but once it's completed, I'll use it as a starting point when making the software requirements specification (SRS).
+
+I also created a few web applications with Django to start getting comfortable with it. This also allowed me to get more comfortable with databases and web development.
+
+There have been two big challenges so far. The first has been learning enough about many unfamiliar technologies to be comfortable in creating a application with them. This took a lot of time, but I'll soon be at the point where I've learned what I expected I would need to know. Whether there turns out to be more I need to learn will is to be determined once I need that knowledge.
+
+The second big challenge was figuring out the best architecture designedGov should take. There are many different ways of implementing the desired functionality, and it's important that I pick the best ways early on because of the layered nature of the application. To overcome this, I've spent a lot of time just thinking about the  different methods I would consider best and then comparing them. I've also put more thought on the lower layers even though they are more complex as they will be the most expensive to change down the road. 
+
+== Future Plans
+
+I'll start by finishing the django book. While reading the django book, I follow along and develop web apps. I'll also work on the application description, but I won't yet start the software requirements specification.

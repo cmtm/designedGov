@@ -35,23 +35,23 @@ The user number will be a 64-bit number. This will allow about
 user. At the point of writing this document, the types of users are 
 listed below. This list is preliminary and will likely be changed.
 
--individual (This might be split up by citizenship status but for now 
+* individual (This might be split up by citizenship status but for now 
 isn't to avoid possible discrimination)
--federal government organization
--provincial government organization
--municipal government organization
--other government organization
--non-profit NGO
--for profit organization
--other
+* federal government organization
+* provincial government organization
+* municipal government organization
+* other government organization
+* non-profit NGO
+* for profit organization
+* other
 
 This user number can be stored in a QR-code for quick and easy 
 tranferal.
 
 ==== public/private key
 
-The public and private key will be need to be large enough to ensure 
-security through time as computational capacity increases. It might 
+The public and private key will need to be large enough to ensure 
+security even as computational capacity increases. It might 
 be advantagious to give organizations larger key lengths than 
 indiciduals, but for now we'll say all key lengths are 3072 bits. 
 The specific encryption algorithm used will be decided at a later 
@@ -92,10 +92,9 @@ their public key. The organization applications will regularly query
 the central server for any public key changes (not added users); 
 this will ensure the old key quickly gets removed from the system.
 
-[NOTE]
-The Central identity server is really just a user like any other. It 
-has it's own user number and public/private key. The key difference 
-is that since the CIS is the server that authenticates 
+[NOTE] The Central identity server is really just a user like any 
+other. It has it's own user number and public/private key. The key 
+difference is that since the CIS is the server that authenticates 
 username/public-key pairs, there is no authority that authenticates 
 the CIS. The public key will need to be gotten from a trusted user 
 who already has the public key. This key will also be widely 
@@ -116,7 +115,7 @@ applications. These users, often government organizations or
 companies, will have their own servers running applications that 
 interact with other users. An example organization with an 
 application would be Canadian Revenue Agency. Their application 
-would have an account for every tax paying user and users would be 
+would keep an account for every tax paying user and users would be 
 able to provide relavant information to them via their application.
 
 Data will be exchanged between users (both individuals and 
@@ -125,11 +124,11 @@ the server doesn't have a cached version of the user's public key,
 it will query the CIS to verify it's authenticity. Once the TLS 
 session is open, they will communicate by passing data in a special 
 format, from here on out called dG format, which will be a subset of 
-the popular JSON 
-format. Each dG messages will be either requests or responses. A 
-request can contain things such as a request for data, an operation 
-to perform on the account, or a granting of permissions. A response 
-relates to a request and can contain data or success/error message.
+the popular JSON format. Each dG messages will be either requests or 
+responses. A request can contain things such as a request for data, 
+an operation to perform on the account, or a granting of 
+permissions. A response relates to a request and can contain data or 
+success/error message.
 
 All data contained in a user account on an application will be 
 translated to a dG object before being sent out. For those 
@@ -150,7 +149,7 @@ themselves point to others (one for each month). Some files pointed
 to in dG files can also be of formats other than dG. These 
 non-dG files will be for when data such as pictures can't be 
 appropriatly serialized in a dG object. A possible use for this 
-would be storing x-rays in a patient's medical record.
+would be storing x-ray images in a patient's medical record.
 
 A user can make requests to read/modify not only his account but the 
 account of others too. This is the whole point of designedGov: 
@@ -167,23 +166,25 @@ access to a patient's medical record.
 Each organization that wishes to keep information on users and 
 interact with them will host an application. Like any other user, 
 this organization will have it's own user name and public key, but 
-the application will be able to accept incomming connections from 
-other users. Each government organization that interacts with the 
-public will have one of these applications. The application will 
-follow the communication protocol when interacting with users. Each 
-application will be responsible for defining their own dG object 
-hierarchy and will make this format public. This way, when a user 
-wants to request a specific key-value pair, they will know the path 
-from the root object. The applications are also resonsible for 
-defining who can read/write what and what permission options are 
-available for each object.
+unlike regular users, they will be able to accept incomming 
+connections from other users through their applications. Each 
+government organization that interacts with the public will have one 
+of these applications. The application will follow the communication 
+protocol when interacting with users. Each application will be 
+responsible for defining their own dG object hierarchy and will make 
+this format public. This way, when a user wants to request a 
+specific key-value pair, they will know the path from the root 
+object. The applications are also resonsible for defining who can 
+read/write what and what permission options are available for each 
+object.
 
 There is nothing stopping non-governmental organizations such as for 
 profit companies from making an organizational application and it is 
 in fact encouraged. This way, all interactions between individuals 
 and organizations will be done via a single secure identity. We 
-won't need to carry any cards in our wallet anymore; your credit and 
-banking accounts will be accessible through your desigedGov ID.
+won't need to carry any cards in our wallet anymore (things like 
+your credit and banking accounts will be accessible through your 
+desigedGov ID).
 
 === Web interface
 
@@ -211,6 +212,10 @@ we don't want to give the user the ability to perform some operations
 without performing others (if all car sales needed to be reported to 
 the CRA, the DMV would be required to report it themselves).
 
+Although a reference web interface will be implemented as part of 
+designedGov, others will be encouraged to develop their own 
+competing interface for various platforms.
+
 == Use cases
 
 To get a feel for how all these layers come together, we'll look at 
@@ -224,7 +229,6 @@ Individuals will be by far most numerous type of users. A user account
 would be necessary to interact with our society, so every resident and 
 even most visitors would have one. 
 
-We'll follow a day in the life of Bob, a school teacher.
 
 Today is an important day for Bob, as he's expecting to hear back 
 from a school he just had a job interview for. In the morning, he 
@@ -251,10 +255,6 @@ all the necessary changes to both the school's account and Bob's. At
 this point, Bob gets a message from the CRA telling him what has 
 been done. Bob doesn't have to do anything else related to his 
 employment as all the "paper work" has been automated.
-
-=== Small company
-
-Troy owns a small bicycle shop...
 
 === Large company
 
