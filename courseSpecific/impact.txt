@@ -1,0 +1,19 @@
+= Impact of designedGov on Society and the Environment
+
+Considering I'm undertaking a software project, some of the required discussion topics don't apply very well. Most of what is discussed here has been covered in previous documents.
+
+== Use of non-renewable resources
+
+As this is a software project, no non-renewable resources will be used. This software will run on hardware that individuals would have had anyways (e.g. smartphones).
+
+== Environmental benefits
+
+If designedGov is widely adopted, we could potentially see some environental benefits. Once source of this would the it's role in the ongoing obsolescence of paper documents. Another benefit would be the reduced need for individuals to be physically present (hence needing to be transported there) in order to authenticate identities.
+
+== Safety and risk
+
+Although designedGov doesn't pose any kind of safety risks in the sense of mortal danger, there are risks from an identity security point of view. One of the main goals of designedGov is to increase identity security, but there are some new risks associated with designedGov not found in our current system. Most of these new risks arise from some users being uneducated about digital security. Besides those, the main risk is how, with designedGov, an identity theif needs to "put himself out there" much less as there will be more opportunities for him to authenticate himself from behind a computer instead of in person where he might be spotted by a camera. That being said, the difficulty of stealing an individual's identity when said individual exercises even moderate caution is much higher with designedGov.
+
+== Benefits to society
+
+The benefits to society and the increased security mentioned above and increased convinience. There will be much less bureaucracy to deal with and many tasks that currently take hours or even days (e.g. filing taxes) can be automated. This system will also make much more information available to us about our society and said information could provide unforseen benefits (e.g. hospital records could give us previously unknown information about a disease).
