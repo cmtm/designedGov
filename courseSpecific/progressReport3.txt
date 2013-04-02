@@ -1,0 +1,52 @@
+= Progress Report 3
+Chris Morin <christopher.morin@mail.mcgill.ca>
+
+== General Information
+
+ID::
+	260344722
+
+Project title::
+	designedGov
+
+Project supervisor::
+	Bettina Kemme (Computer Science)
+
+
+== Supervisor meetings
+
+I haven't met with my supervisor since the last progress report. It has only been two weeks since the last project report and we haven't had 
+much time.
+
+== Project Reading
+
+I thought I had settled on what documentation I would read and what 
+technologies I would use, but I came across many very relevant projects 
+that attempt to provide solutions to the problem of managing access 
+control to a user's resources. I've read some of the documentation, but 
+I'll have to spend another week or two as there are many alternatives 
+and they provide various functionality.
+
+Some the projects in question:
+
+- XACML
+- PERMIS
+- Shibboleth
+- Higgins project
+- User-Managed Access
+- XRI
+- SAML 
+
+== Recent Progress
+
+I've stopped working on the application description in order to explore 
+the projects mentioned in the section above. There is a lot to read and 
+many of the projects have overlapping functionality.
+
+== Future Plans
+
+I was planning to be well into working on the application description by 
+now, but since I've found that these projects already implement much of the functionality I thought I would have to implement myself. Although 
+reading about them will stall the project advancement in the short term, 
+it has the potential to save a lot of time in the long run along with 
+adding functionality and robustness.
