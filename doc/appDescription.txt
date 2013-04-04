@@ -124,7 +124,7 @@ the server doesn't have a cached version of the user's public key,
 it will query the CIS to verify it's authenticity. Once the TLS 
 session is open, they will communicate by passing data in a special 
 format, from here on out called dG format, which will be a subset of 
-the popular JSON format. Each dG messages will be either requests or 
+the popular YAML format. Each dG messages will be either requests or 
 responses. A request can contain things such as a request for data, 
 an operation to perform on the account, or a granting of 
 permissions. A response relates to a request and can contain data or 
@@ -132,7 +132,7 @@ success/error message.
 
 All data contained in a user account on an application will be 
 translated to a dG object before being sent out. For those 
-unfamiliar with JSON, an object contains a list of key-value pairs 
+unfamiliar with YAML, an object contains a list of key-value pairs 
 and can also contain child objects. This way, each key-value pair 
 can be accessed by traversing a root object. This object will follow 
 a standard which makes it easy for users to see what data is 

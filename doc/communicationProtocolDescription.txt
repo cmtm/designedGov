@@ -1,0 +1,130 @@
+= Communication Protocol Description
+Chris Morin <chris.morin2@gmail.com>
+
+== Introduction
+
+Communication between users and organization applications will 
+consist of them passing YAML objects back and forth (henceforth 
+called dG objects). In the context of a single transaction, the user 
+wishing to acces an account hosted by the organization application 
+will be called the client and the organization application will be 
+called the server. The specific medium used to pass these objects 
+isn't of great importance, so we'll assume it's occuring over https.
+
+The client and server use their keys to open a session and once 
+handshaking is complete, the client sends a Request dG object. This 
+Request object contains the information relating to what the client 
+wants from the server. The server processes the request by ensuring 
+the client has the relevant permissions and performing the disired 
+action if so. The server then replies with a Response dG object which 
+states wether the action was a success or not and contains data 
+related to the nature of the request (e.g. if the request was a 
+request to read a certain value, the response would contain said 
+value).
+
+So far we have seen two dG object types: requests and responses. A 
+third type is used by servers to publicize the structure of their user 
+accounts along with details about the nature of the data in them. 
+These objects are called templates.
+
+All dG objects conform to the following structure. Any element 
+preceded by a tilde is optional.
+	---
+	[template | request | response]:
+		<object content>
+	
+	author ID: <ID of user who authored this document>
+	author key: <author's public key>
+	signature: <signature of author>
+	...	
+
+This document will detail how these 3 dG objects are structured and 
+why they are structures as such.
+
+=== Template Object
+
+Template objects are publicly available from organization 
+applications and allow users to see the structure and content of an 
+organization's accounts without even needing to have their own 
+account. Template objects conform the process of users exploring 
+what kind of data they have access to in their account and how they 
+can interact with in.
+
+==== Structure
+
+Template objects are dG objects so they adhere to the structure 
+detailed above. The object content section (the only part that varies 
+between object types) of template types is detailed below.
+
+	organization name: <org name>
+	short_description: <description of account purpose>
+	~long_description: <longer description>
+	data_map:
+		<data map>
+
+A data map looks like this.
+
+	<data 1 name>:
+		<data_item 1>
+
+	~<more data_items>
+
+
+
+A data_item conforms to the following structure.
+
+	type: "inode | regular | image | binary blob"
+	access_policy: <access policy>
+	is_optional: "true | flase"
+	remote: "true | false"
+	~description: <description of data>
+	~children: <data map of children items>
+	
+
+
+type::
+	Type of the data_item. These are the first types but others could 
+	be added. inode simply means that the type isn't a value but 
+	contains children which themselves are data_items. data_items of 
+	type regular are items which conform to YAML's built-in types 
+	(i.e. numbers, strings, associative array, list).
+	
+access_policy::
+	The access policy describes who has access to data and how the 
+	owner can grant access. The syntax of the access policy is 
+	detailed in a later section.
+	
+is_optional::
+	Some data_items aren't necessarily present in all accounts. This field 
+	specifies wether the data_item might not be in an account.
+	
+description::
+	Description of the data_item.
+	
+children::
+	Only inodes have a children field. The children field contains a 
+	data map with child data_items inside. Some organization 
+	applications could have large and complex account structures. 
+	Putting all of this in a single file and transmitting it 
+	whenever anyone wants to know about how the account is 
+	structured would impractile. Several template files can be used 
+	to describes different parts of the data structure. In the case 
+	where a inode type doesn't have a children field, the children 
+	can be accessed in the remote file. How a client fetches other 
+	template will be described later. 
+
+==== Access policy
+
+==== Example
+
+=== Request
+
+==== Structure
+
+==== Example
+
+=== Response
+
+==== Structure
+
+==== Example
