@@ -41,7 +41,7 @@ preceded by a tilde is optional.
 This document will detail how these 3 dG objects are structured and 
 why they are structures as such.
 
-=== Template Object
+== Template Object
 
 Template objects are publicly available from organization 
 applications and allow users to see the structure and content of an 
@@ -50,7 +50,7 @@ account. Template objects conform the process of users exploring
 what kind of data they have access to in their account and how they 
 can interact with in.
 
-==== Structure
+=== Structure
 
 Template objects are dG objects so they adhere to the structure 
 detailed above. The object content section (the only part that varies 
@@ -61,6 +61,11 @@ between object types) of template types is detailed below.
 	~long_description: <longer description>
 	data_map:
 		<data map>
+		
+	actions:
+		<list of actions>
+
+=== Data Map
 
 A data map looks like this.
 
@@ -73,14 +78,13 @@ A data map looks like this.
 
 A data_item conforms to the following structure.
 
-	type: "inode | regular | image | binary blob"
-	access_policy: <access policy>
+	type: "inode | list | regular | image | binary blob"
+	~access_policy: <access policy>
 	is_optional: "true | flase"
-	remote: "true | false"
 	~description: <description of data>
-	~children: <data map of children items>
-	
+	~children: <data map of children items or single item>
 
+	
 
 type::
 	Type of the data_item. These are the first types but others could 
@@ -102,8 +106,8 @@ description::
 	Description of the data_item.
 	
 children::
-	Only inodes have a children field. The children field contains a 
-	data map with child data_items inside. Some organization 
+	Only inodes have a children field. In the case of inodes, children field contains a 
+	data map with child data_items inside. In the case of lists, the children field contains a single data item. A list can have several data items of the same form and the child data item specifies this form. Some organization 
 	applications could have large and complex account structures. 
 	Putting all of this in a single file and transmitting it 
 	whenever anyone wants to know about how the account is 
@@ -111,20 +115,152 @@ children::
 	to describes different parts of the data structure. In the case 
 	where a inode type doesn't have a children field, the children 
 	can be accessed in the remote file. How a client fetches other 
-	template will be described later. 
+	template will be described later.
+
+
+	
+
 
 ==== Access policy
 
-==== Example
+By default, the account owner will have read access to all fields while the organization which hosts the account will have read and write access. All other users have no access. The access policy section details how permissions on the specific piece of data differ from this. All permissions are inherited recursively by any children data items.
 
-=== Request
+The access policy will consist of a list of user ID/permission pairs. A user ID permission pair looks like this.
 
-==== Structure
+	<user ID number> : <permissions>
+	
+The permission part can be 'r', 'rw' or the probably seldom used 'w' (write acces without read access). The user ID number will have two aliases: "owner" and "host". These will make the common case of changning the account owner's or the hosting organization's permissions more legible. The access policy also shows what kind of permissions a user can grant. This is specified after the user's permissions as a 'g' followed by the specific permissions they can grant. A possible access policy field could look like this:
 
-==== Example
+	access_policy:
+		- owner: rw gr
+		- 7d4f4e363e: r
+		- 4e277a5539: rw
+		
+[NOTE]
+I might add another permission called 'a' which causes the host to send an alert to the user ID when the data field is changed.
 
-=== Response
+=== Actions
 
-==== Structure
+Actions allow users to interact with accounts in ways not easily possible with simple reads and writes. An example could be scheduling a doctor's appointment; it would feel unatural to schedule an appoinment by writing to certain data locations.
 
-==== Example
+A list of actions looks like this
+	- <action name 1> :
+		<action 1>
+	~- <more actions>	
+
+An action is stuctured as so:
+	parameters: <parameters>
+	caller_list: <list of users who can call the action>
+	~description: <description of action>
+
+The parameter field is a map of key value pairs which allow the action caller to pass some data. It's structured as below.
+
+parameters:
+	<param 1>: <description of param 1>
+	~<more parameters>
+
+Example actions for the Quebec automobile society:
+
+	actions:
+		schedule_test:
+			parameters:
+				time: time of the test
+				location: test can take place in dorval (DORVAL) or in montreal (MONTREAL).
+				type: is it a WRITTEN test or a PRACTICAL test
+				payment: authorization of transfer of $100 to the SAAQ
+				
+			caller_list: owner
+			description: schedule a test to obtain driver liscence.
+		
+		add_car:
+			parameters:
+				used_or_new: is the car USED or is it NEW
+				purchase_form: form obtained when vehicle was purchased
+				payment: authorization of transfer of $200 to the SAAQ
+		
+		remove_car:
+			parameters:
+				car_ID: ID of the car on record you'd like to remove
+				selling_form: (optional) form from car sale
+		
+
+=== Example
+
+To put it all together, let's look at a simple example template. We'll build off the actions we used above.
+
+	organization name: SAAQ
+	short_description:  >
+		The Société de l'assurance automobile du Québec or SAAQ (English: Quebec Automobile Insurance Corporation), is a Quebec crown corporation responsible for licensing drivers and vehicles in the province and providing public auto insurance
+
+	data_map:
+		vehicles:
+			type: list
+			is_optional: flase
+			description: list of cars user own or has owned
+			children:
+				car_ID: car ID
+				make: make of car
+				model: car model
+				year: year of car model
+				color: color of car
+				car_purchase_date: date car was purchased by account owner
+				date_of_disposal: data account owner lost possession of car
+		
+		driving_points:
+			type: regular
+			is_optional: false
+			description: points account owner has and the total points available to him in the form of POINTS_LEFT / TOTAL POINTS
+			access_policy:
+				owner: r gr       # the owner can grant access to they points as many insurance companies use this data for premium calculation.		
+					
+	actions:
+		schedule_test:
+			parameters:
+				time: time of the test
+				location: test can take place in dorval (DORVAL) or in montreal (MONTREAL).
+				type: is it a WRITTEN test or a PRACTICAL test
+				payment: authorization of transfer of $100 to the SAAQ
+				
+			caller_list: owner
+			description: schedule a test to obtain driver liscence.
+		
+		add_car:
+			parameters:
+				used_or_new: is the car USED or is it NEW
+				purchase_form: form obtained when vehicle was purchased
+				payment: authorization of transfer of $200 to the SAAQ
+		
+		remove_car:
+			parameters:
+				car_ID: ID of the car on record you'd like to remove
+				selling_form: (optional) form from car sale
+	
+
+== Request
+
+When a user wants to interact with an organization, they create a request and send it to the organization's server. The request can be to read some data, write some data or call an action.
+
+=== Structure
+
+A request object consists of a list of requests and is structured as follows.
+
+	request:
+		- <request item 1>
+		~- <possible more request items>
+
+Each request item looks like this:
+
+	req_type: "read | write | action call"
+	~data_path: <path to data in the case of a read/write>
+	~action_name: <name on action in case of action call>
+	~paramaters: <map of parameter name/values in case of action call>
+
+=== Structure
+
+=== Example
+
+== Response
+
+=== Structure
+
+=== Example
