@@ -29,6 +29,7 @@ These objects are called templates.
 
 All dG objects conform to the following structure. Any element
 preceded by a tilde is optional.
+
 	---
 	[template | request | response]:
 		<object content>
@@ -164,11 +165,13 @@ scheduling a doctor's appointment; it would feel unnatural to
 schedule an appointment by writing to certain data locations.
 
 A list of actions looks like this
+
 	- <action name 1> :
 		<action 1>
 	~- <more actions>
 
 An action is structured as so:
+
 	parameters: <parameters>
 	caller_list: <list of users who can call the action>
 	~description: <description of action>
@@ -176,9 +179,9 @@ An action is structured as so:
 The parameter field is a map of key value pairs which allow the
 action caller to pass some data. It's structured as below.
 
-parameters:
-	<param 1>: <description of param 1>
-	~<more parameters>
+	parameters:
+		<param 1>: <description of param 1>
+		~<more parameters>
 
 Example actions for the Quebec automobile society:
 
@@ -301,7 +304,6 @@ languages with a series of names separated by periods. lists are
 indexed with brackets (C-style).
 
 An action call request looks like this:
-
 
 	req_type: "action call"
 	action_name: <name of action>
