@@ -30,14 +30,16 @@ These objects are called templates.
 All dG objects conform to the following structure. Any element
 preceded by a tilde is optional.
 
-	---
-	[template | request | response]:
-		<object content>
+----------------------------------------------
+---
+[template | request | response]:
+	<object content>
 
-	author ID: <ID of user who authored this document>
-	author key: <author's public key>
-	signature: <signature of author>
-	...
+author ID: <ID of user who authored this document>
+author key: <author's public key>
+signature: <signature of author>
+...
+----------------------------------------------
 
 This document will detail how these 3 dG objects are structured and
 why they are structures as such.
@@ -57,34 +59,38 @@ Template objects are dG objects so they adhere to the structure
 detailed above. The object content section (the only part that varies
 between object types) of template types is detailed below.
 
-	organization name: <org name>
-	short_description: <description of account purpose>
-	~long_description: <longer description>
-	data_map:
-		<data map>
+----------------------------------------------
+organization name: <org name>
+short_description: <description of account purpose>
+~long_description: <longer description>
+data_map:
+	<data map>
 
-	actions:
-		<list of actions>
+actions:
+	<list of actions>
+----------------------------------------------
 
 === Data Map
 
 A data map looks like this.
 
-	<data 1 name>:
-		<data_item 1>
+----------------------------------------------
+<data 1 name>:
+	<data_item 1>
 
-	~<more data_items>
-
+~<more data_items>
+----------------------------------------------
 
 
 A data_item conforms to the following structure.
 
-	type: "inode | list | regular | image | binary blob"
-	~access_policy: <access policy>
-	is_optional: "true | false"
-	~description: <description of data>
-	~children: <data map of children items or single item>
-
+----------------------------------------------
+type: "inode | list | regular | image | binary blob"
+~access_policy: <access policy>
+is_optional: "true | false"
+~description: <description of data>
+~children: <data map of children items or single item>
+----------------------------------------------
 
 
 type::
@@ -148,10 +154,12 @@ permissions a user can grant. This is specified after the user's
 permissions as a 'g' followed by the specific permissions they can
 grant. A possible access policy field could look like this:
 
-	access_policy:
-		- owner: rw gr
-		- 7d4f4e363e: r
-		- 4e277a5539: rw
+----------------------------------------------
+access_policy:
+	- owner: rw gr
+	- 7d4f4e363e: r
+	- 4e277a5539: rw
+----------------------------------------------
 
 [NOTE]
 I might add another permission called 'a' which causes the
@@ -166,114 +174,124 @@ schedule an appointment by writing to certain data locations.
 
 A list of actions looks like this
 
-	- <action name 1> :
-		<action 1>
-	~- <more actions>
+----------------------------------------------
+- <action name 1> :
+	<action 1>
+~- <more actions>
+----------------------------------------------
 
 An action is structured as so:
 
-	parameters: <parameters>
-	caller_list: <list of users who can call the action>
-	~description: <description of action>
+----------------------------------------------
+parameters: <parameters>
+caller_list: <list of users who can call the action>
+~description: <description of action>
+----------------------------------------------
 
 The parameter field is a map of key value pairs which allow the
 action caller to pass some data. It's structured as below.
 
-	parameters:
-		<param 1>: <description of param 1>
-		~<more parameters>
+----------------------------------------------
+parameters:
+	<param 1>: <description of param 1>
+	~<more parameters>
+----------------------------------------------
 
 Example actions for the Quebec automobile society:
 
-	actions:
-		schedule_test:
-			parameters:
-				time: time of the test
-				location:  >
-					test can take place in Dorval (DORVAL) or in 
-					Montreal (MONTREAL).
-				type: is it a WRITTEN test or a PRACTICAL test
-				payment: authorization of transfer of $100 to the SAAQ
+----------------------------------------------
+actions:
+	schedule_test:
+		parameters:
+			time: time of the test
+			location:  >
+				test can take place in Dorval (DORVAL) or in 
+				Montreal (MONTREAL).
+			type: is it a WRITTEN test or a PRACTICAL test
+			payment: authorization of transfer of $100 to the SAAQ
 
-			caller_list: owner
-			description: schedule a test to obtain driver licence.
+		caller_list: owner
+		description: schedule a test to obtain driver licence.
 
-		add_car:
-			parameters:
-				used_or_new: is the car USED or is it NEW
-				purchase_form: form obtained when vehicle was purchased
-				payment: authorization of transfer of $200 to the SAAQ
+	add_car:
+		parameters:
+			used_or_new: is the car USED or is it NEW
+			purchase_form: form obtained when vehicle was purchased
+			payment: authorization of transfer of $200 to the SAAQ
 
-		remove_car:
-			parameters:
-				car_ID: ID of the car on record you'd like to remove
-				selling_form: (optional) form from car sale
-
+	remove_car:
+		parameters:
+			car_ID: ID of the car on record you'd like to remove
+			selling_form: (optional) form from car sale
+----------------------------------------------
 
 === Example
 
 To put it all together, let's look at a simple example template.
 We'll build off the actions we used above.
 
-	organization name: SAAQ
-	short_description:  >
-		The Société de l'assurance automobile du Québec or SAAQ
-		(English: Quebec Automobile Insurance Corporation), is a
-		Quebec crown corporation responsible for licensing drivers
-		and vehicles in the province and providing public auto
-		insurance
+----------------------------------------------
+---
+organization name: SAAQ
+short_description:  >
+	The Société de l'assurance automobile du Québec or SAAQ
+	(English: Quebec Automobile Insurance Corporation), is a
+	Quebec crown corporation responsible for licensing drivers
+	and vehicles in the province and providing public auto
+	insurance
 
-	data_map:
-		vehicles:
-			type: list
-			is_optional: false
-			description: list of cars user own or has owned
-			children:
-				car_ID: car ID
-				make: make of car
-				model: car model
-				year: year of car model
-				color: color of car
-				car_purchase_date: date car was purchased by account owner
-				date_of_disposal: data account owner lost possession of car
+data_map:
+	vehicles:
+		type: list
+		is_optional: false
+		description: list of cars user own or has owned
+		children:
+			car_ID: car ID
+			make: make of car
+			model: car model
+			year: year of car model
+			color: color of car
+			car_purchase_date: date car was purchased by account owner
+			date_of_disposal: data account owner lost possession of car
 
-		driving_points:
-			type: regular
-			is_optional: false
-			description:  >
-				points account owner has and the total points
-				available to him in the form of POINTS_LEFT / TOTAL
-				POINTS
-			access_policy:
-				owner: r gr
-					# the owner can grant access to they
-					# points as many insurance companies use this
-					# data for premium calculation.
+	driving_points:
+		type: regular
+		is_optional: false
+		description:  >
+			points account owner has and the total points
+			available to him in the form of POINTS_LEFT / TOTAL
+			POINTS
+		access_policy:
+			owner: r gr
+				# the owner can grant access to they
+				# points as many insurance companies use this
+				# data for premium calculation.
 
-	actions:
-		schedule_test:
-			parameters:
-				time: time of the test
-				location:  >
-					test can take place in Dorval (DORVAL) or in 
-					Montreal (MONTREAL).
-				type: is it a WRITTEN test or a PRACTICAL test
-				payment: authorization of transfer of $100 to the SAAQ
+actions:
+	schedule_test:
+		parameters:
+			time: time of the test
+			location:  >
+				test can take place in Dorval (DORVAL) or in 
+				Montreal (MONTREAL).
+			type: is it a WRITTEN test or a PRACTICAL test
+			payment: authorization of transfer of $100 to the SAAQ
 
-			caller_list: owner
-			description: schedule a test to obtain driver licence.
+		caller_list: owner
+		description: schedule a test to obtain driver licence.
 
-		add_car:
-			parameters:
-				used_or_new: is the car USED or is it NEW
-				purchase_form: form obtained when vehicle was purchased
-				payment: authorization of transfer of $200 to the SAAQ
+	add_car:
+		parameters:
+			used_or_new: is the car USED or is it NEW
+			purchase_form: form obtained when vehicle was purchased
+			payment: authorization of transfer of $200 to the SAAQ
 
-		remove_car:
-			parameters:
-				car_ID: ID of the car on record you'd like to remove
-				selling_form: (optional) form from car sale
-
+	remove_car:
+		parameters:
+			car_ID: ID of the car on record you'd like to remove
+			selling_form: (optional) form from car sale
+...			
+----------------------------------------------
 
 == Request
 
@@ -286,16 +304,20 @@ to read some data, write some data or call an action.
 A request object consists of a list of requests and is structured as
 follows.
 
-	request:
-		- <request item 1>
-		~- <possibly more request items>
+----------------------------------------------
+request:
+	- <request item 1>
+	~- <possibly more request items>
+----------------------------------------------
 
 There are three request item types. Read, write and action call
 type. A read or write request items is structured like this:
 
-	req_type: "read | write"
-	data_path: <path to data>
-	~new_value: <new data to be written in case of write>
+----------------------------------------------
+req_type: "read | write"
+data_path: <path to data>
+~new_value: <new data to be written in case of write>
+----------------------------------------------
 
 The data_path takes on the value of the path to the data to
 read/write. As seen in the template section, account data in
@@ -305,9 +327,11 @@ indexed with brackets (C-style).
 
 An action call request looks like this:
 
-	req_type: "action call"
-	action_name: <name of action>
-	~paramaters: <map of parameter name/values>
+----------------------------------------------
+req_type: "action call"
+action_name: <name of action>
+~paramaters: <map of parameter name/values>
+----------------------------------------------
 
 
 === Example
@@ -317,27 +341,29 @@ bought a new car and also wants to check up on how many points they
 have left on their licence. They would create a request object that
 looks like this.
 
-	---
-	request:
-		- req_type: read
-		  data_path: driving_points
+----------------------------------------------
+---
+request:
+	- req_type: read
+	  data_path: driving_points
+		
+	- req_type: action call
+	  action_name: add_car
+	  parameters:
+	      used_or_new: NEW
+	      purchase_form:
+		      date_bought: ...
+		      dealer: ...
+		      ...
+		  payment:
+		      payment_method: credit
+		      ...		      
 
-		- req_type: action call
-		  action_name: add_car
-		  parameters:
-		      used_or_new: NEW
-		      purchase_form:
-			      date_bought: ...
-			      dealer: ...
-			      ...
-			  payment:
-			      payment_method: credit
-			      ...
-
-	author ID: 5e7a255c43
-	author key: 23252d22736b7a257538355a7c31233f273e763a37685027433852455d
-	signature: 6e3521214a5e3f496a563d642b21595344516d67716a6e463a70713764
-	...
+author ID: 5e7a255c43
+author key: 23252d22736b7a257538355a7c31233f273e763a37685027433852455d
+signature: 6e3521214a5e3f496a563d642b21595344516d67716a6e463a70713764
+...
+----------------------------------------------
 
 == Response
 
@@ -350,34 +376,39 @@ any relevant data (such as data requested in a read).
 The response object contains a response item for each request item.
 Naturally, they will have similar structures.
 
-	response:
-		- <response item 1>
-		~- <possibly more response items>
+----------------------------------------------
+response:
+	- <response item 1>
+	~- <possibly more response items>
+----------------------------------------------
 
 A response item:
 
-	resp_type: <same as corresponding request>
-	was_succesful: "true | false"
-	~failure_cause: ""
-	~value_read: <value of data item in case of read>
-	~action_call_resp: <action call might need to return specific data>
-
+----------------------------------------------
+resp_type: <same as corresponding request>
+was_succesful: "true | false"
+~failure_cause: <explanation for transaction failure>
+~value_read: <value of data item in case of read>
+~action_call_resp: <action call might need to return specific data>
+----------------------------------------------
 
 === Example
 
 Let's look at a possible response to the request example seen above.
 
-	---
-	response:
-		- resp_type: read
-		  was_succesful: true
-		  value_read: 2 / 10
+----------------------------------------------
+---
+response:
+	- resp_type: read
+	  was_succesful: true
+	  value_read: 2 / 10
+		
+	- resp_type: action call
+	  was_successful: false
+	  failure_cause: dealer could not confirm car purchase
 
-		- resp_type: action call
-		  was_successful: false
-		  failure_cause: dealer could not confirm car purchase
-
-	author ID: 5e7a255c43
-	author key: 23252d22736b7a257538355a7c31233f273e763a37685027433852455d
-	signature: 6e3521214a5e3f496a563d642b21595344516d67716a6e463a70713764
-	...
+author ID: 5e7a255c43
+author key: 23252d22736b7a257538355a7c31233f273e763a37685027433852455d
+signature: 6e3521214a5e3f496a563d642b21595344516d67716a6e463a70713764
+...
+----------------------------------------------
