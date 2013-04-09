@@ -1,0 +1,3 @@
+#!/bin/zsh
+
+a2x -v -f pdf --fop --dblatex-opts "-P latex.output.revhistory=0" $1 
