@@ -1,0 +1,1323 @@
+= designedGov
+Chris Morin <christopher.morin@mail.mcgill.ca>
+
+== Abstract
+
+designedGov is an attempt at creating a system which greatly reduces 
+the time and complexity in data exchanges between organizations 
+(such as government organizations) and those they provide services 
+to. Also, designedGov will make data exchanges more secure and 
+reliable than in our current system.
+
+desginedGov provides two services: an identity authentication 
+service and a data exchange protocol. The authentication service is 
+designed in a way which allows it to replace virtually all current 
+identity systems, and fill the gaps where they're needed. The data 
+exchange protocol builds on top of this authentication system to 
+allow the automation of comunication between service providing 
+organizations and their users. Communication is represented as users 
+accessing their accounts hosted by organizations. They authenticate 
+their identity to organizations by going trough a trusted 
+certificate authority. A user therefore only has a single set of 
+account login information and can authenticate their identity to 
+anyone.
+
+To make things a little less abstract, a possible service using 
+designedGov could keep track of a person/organization's financial 
+transactions and remove the need to "manually" file taxes. Various 
+organizations such as his bank and his employer would exchange 
+information about him with the CRA, eliminating the need for him to 
+coordinate it all. All he would need to do is confirm with the CRA 
+that said organizations are indeed associated with him.  Another 
+example would be a person having access to their entire medical 
+history and medical service providers being able to access it 
+instantaneously regardless of their geographical location. All this 
+would be secure thanks to the identity authentication service.
+
+
+== Definitions
+
+designedGov::
+	Application that is the subject of this document
+
+Application::
+	A collection of software which works together to provide a service.
+	
+User::
+	Person or organization who communicates using designedGov
+	
+Account::
+	Representation of a user within an application. The application 
+	can remember user information and communicates with users using 
+	designedGov.
+	
+designedGov host (host)::
+	An organization which provides services to other users. They 
+	host accounts and have an application which complies to the 
+	designedGov standards. Hosts are themselves users.
+
+designedGov client (client)::
+	A user that has an account with a host is that host's client.
+	
+
+
+
+== Motivation
+
+Although desginedGov hosts can be governmental or non-governmental, 
+I'll focus on why government should use it. Non-governmental 
+organizations will use it once we build up enough infrastructure that 
+people start using it.
+
+I'll spare the spiel about how computing and connectivity is 
+becoming more ubiquitous and about how we should take advantage of 
+it to better organize our public services because I find it 
+glaringly obvious. I'll focus on why I felt the need to create this 
+project instead of waiting for the inevitability of the government 
+creating their own solution.
+
+Already, the government is implementing and rolling out digital 
+services or digital front ends to their services. It would therefore 
+be fair to ask why I feel the need to create this application. My 
+answer is that the way government services evolve is very bad. They 
+build upon previous iterations and all evolve mostly independently 
+(and dependently in some bad ways) so that at the end of it you have 
+a bunch of scattered systems where most of the design decisions 
+weren't made to increase usability but to fit into the existing one. 
+This is a pain for the end user as they need to not only learn how 
+to use all these systems but it also makes them need to keep track 
+of many different account details. Although this might seem like a 
+mere inconvenience (which is enough for me to justify this system, 
+but not for others), the larger problem is security.
+
+Organizations use user authentication which was never intended for 
+the used purpose. This is called functionality creep and is a costly 
+problem. An example is the Canadian social insurance number (SIN):
+
+[quote]
+_______
+The SIN was created in 1964 to serve as a client account number 
+in the administration of the Canada Pension Plan and Canada's varied 
+employment insurance programs. In 1967, Revenue Canada (now the 
+Canada Revenue Agency) started using the SIN for tax reporting 
+purposes.
+_______
+
+The SIN has become the de facto national identification 
+number, a purpose for which it was never meant to be used. The 
+security flaws are glaringly obvious: the SIN must be passed around 
+as plain text and with it someone can steal a person's identity. 
+This has become such a problem that the Canadian government has 
+recently decided to phase out physical SIN cards because of rampant 
+identity theft. Instead of developing a new system as I am 
+attempting, their solution is to rely on stricter privacy laws.
+
+Different service providing organizations have created their own 
+account details such as the student "Permanent Code" or the driver's 
+license number. Problems with these are that once again they are 
+inconvenient and aren't made with security in mind. I'll talk more 
+about it later, but I feel that the people designing these systems 
+don't know about modern cryptographic technology which should be a 
+core tool in any system of this type.
+
+Even if they were made with security and even cryptographic tools in 
+mind though, a secure system requires the user has knowledge of how 
+the security mechanisms work and what can be trusted. A system can 
+be cryptographically secure but if a criminal impersonating a 
+government official can call an unknowing user and convince them to 
+divulge their account details, the system isn't secure. Each user 
+having a single account for all services makes it easier for them to 
+learn the knowledge needed to keep their information secure. I'll 
+talk more about security education later.
+
+The government has also shown us time and time again that they can't 
+be relied upon to efficiently create a good application at a 
+reasonable cost. A recent example that comes to mind is the Canadian 
+gun registry. It's a simply system and the development and 
+maintenance costs should have been negligible. Many have attributed 
+the cost overruns to government mismanagement.
+
+I could write a book on the shortfalls of our government's current 
+digital infrastructure and why I chose to create this application, 
+but I know when to stop beating a dead horse; I'll finish on an 
+idealistic note instead. I believe an application that aims to be 
+this pervasive and important to our society shouldn't be created by 
+a company contracted by the government but should be an open source 
+project developed and maintained by volunteers. The government will 
+of course take over the reins when (if) they start taking it 
+seriously, but even then I feel it's too important to be developed 
+behind closed doors and should remain open to community 
+contributions and input. An application of the people, by the 
+people, for the people.
+
+== Guiding Principles
+
+If we were to through away our preconceived notions of how a 
+government should provide services and envision the ideal 
+application to perform this task, what would this application look 
+like? I'm not talking about aesthetics, but about fundamental 
+questions like what scope of services should the application cover? 
+What amount of technical knowledge should we expect from users? What 
+kind of privacy should we guarantee? This section is my answer to 
+these questions and will set the tone for designedGov.
+
+.Minimize complexity
+
+As stated before, users will use a single set of account details and 
+a single login procedure. Since we are designing the system as a 
+whole, we have this option and there is little reason for us not to 
+take it. designedGov will use public key cryptography to accomplish 
+this. A User doesn't need to provide a password when using this 
+system as their is no password. This allows users to authenticate 
+their identity to untrusted hosts. This contrasts with a simple 
+password system as the host has a users password and a user can only 
+authenticate their identity to a trusted host who already has their 
+password. Even though public key cryptography is more complex than 
+simple password authentication, it will reduce overall complexity as 
+there is a single set of account details that can be used with all 
+hosts as opposed whereas a password system requires different details 
+for each host. 
+
+Some might say that a single entry point into a person's entire "identity" is 
+too vulnerable. That is fair, but I feel that implementing heuristic 
+identity theft detection and teaching users about basic digital 
+security would render it more secure than a multiple account system. 
+Also, because of the way our system works, having multiple account 
+systems just provides multiple points of vulnerability to someone's 
+entire "identity" because they can use access to one account to gain 
+access to others. Not to mention that most people keep all their IDs 
+in one place: their wallet.
+
+.designedGov will be FOSS
+
+FOSS stands for Free and Open Source Software. I touched on this 
+before: considering the importance of this application, it would be 
+safest to develop it in the public eye. This helps protect against 
+both government incompetence and corruption. It not only allows our 
+own citizens to contribute to it but can also lead to other countries 
+adpopting it. This could grow into a global identity system where 
+users are authenticated by their country of origin.
+
+.Users must understand the system
+
+The best security system is a computationally secure one with 
+educated users. Anything else isn't acceptable. This might be the 
+hardest principle to swallow but I believe it to be the most 
+important. The application will be computationally secure, but users 
+will need to take the time to learn about security. I don't think 
+this will be too difficult for them. Even at that though, an 
+unknowledgeable person would be safer using designedGov over 
+Canada's current systems. Even now, most people (even policy makers) 
+don't understand how modern security (e.g. cryptography) works while 
+they still use these systems, like online banking or credit cards, 
+on a daily basis. Instead of relying on users being educated, these 
+systems use deterrents like threats of legal action against 
+criminals. These deterrents should remain in place but evidence 
+suggests they aren't enough. I would suggest a simple online 
+security course. I don't think this would take more than a day for 
+even the least tech savvy of users. A good general computing course 
+should be part of our high school curriculum too. I'm not talking 
+about how to use MS Office, I'm talking about basic programming, 
+networks and how to stay safe. The benefits of this course would go 
+far beyond being able to use designedGov safely.
+
+.We shouldn't blindly trust the government. 
+
+A centralized system like this, while making us safer from crimes 
+such as identity theft can make a country vulnerable to a corrupt 
+government (when you think of it though, our current systems aren't 
+really any more secure from government corruption than the worst 
+digital system). A possible worry would be the government being able 
+to "delete" politically opposing citizens while individuals have no 
+recourse. They could even create fake identities and have those 
+identities vote for them. Some of the challenges are more difficult 
+than others, but a great cryptographic tool at our disposal is 
+called a digital signature. This tool allows a government to 
+virtually sign some data like a person signs a paper document. Only 
+the government can create this signature and it can be validated by 
+anybody. A cautious user could then have the government sign his 
+basic account information (Name, address, citizenship status, ...) 
+daily and store this information on a USB thumb drive and bury it in 
+his garden. It would be difficult to contest proof that at that time 
+his account was in the state he claimed it was and the government 
+would have to explain any modifications such as change of 
+citizenship status or even deletion of an individual.
+	
+
+.Design for a more connected world
+
+Mobile computing will become more ubiquitous and we should design 
+for that. Already, most people have mobile computing and 
+connectivity capabilities and ten years from now, all but the most 
+cloistered will. We should assume that most users will have the 
+ability to access this application anywhere and so should create 
+service interfaces that leverage this.
+
+
+.A user should be able to give account permissions to other users
+
+This permission service will cut a lot of red tape. Imagine buying a 
+car at a dealer, and at that same point of transaction having it 
+automatically registered with the vehicle registration authority, 
+having the plate mailed to you along with all the relevant fees 
+being processed. Staying with the car theme, even selling a used car 
+to another user could be automatically completed. A prospective 
+buyer could pull the vehicle's history (repairs, accidents, ...) 
+with the seller's permission to make sure the seller is honest. This 
+reduction in red tape should in turn bring the costs of delivering 
+the services down.
+
+.Design for the unexpected
+
+We can only fathom what technology will be like 20 years from now. We 
+don't want designedGov to fall victim to the same fate that our 
+current systems did: falling behind. Large scale systems like these 
+have a lot of inertia and are very difficult to replace. We should 
+therefore ensure desginedGov is designed in a modular way so that 
+parts can easily be updated without breaking the whole system.
+
+== Uncertain principles
+
+
+I have my own vision for this application, but I acknowledge that 
+some aspects might not line up with the views of the general 
+population. These possible points of contention are related to how 
+much we should expect users to know about the system, how dependent 
+we should be on this application and what kind of privacy policy 
+will we have.
+
+Ideally, all users would be well versed in cryptography and the 
+specifics of the system. It is inevitable that some unknowing users 
+will make mistakes that compromise their identity and even their 
+financial well-being. We can always restrict the freedoms of users 
+to prevent them from "shooting themselves in the foot". My personal 
+view is that although there might be a few hitches at the beginning, 
+designedGov will be part of everyday life and people will discuss 
+and share amongst themselves best practices. Also, because of how an 
+identity is centralized, a stolen identity would be very easily 
+recovered and could be as easy as a password change. This will have 
+to be discussed and debated.
+
+Next is how dependent we should be on it. Having the view that this 
+application is more secure than our current systems, I believe that 
+this should be the default form of identity authentication and data 
+exchange. That being said, how much trust we should put in the 
+safety of the system will be contentious. Would people be 
+comfortable voting through this system? When someone authenticates 
+themselves after completing a large transaction, should more 
+traditional authentication methods be used (e.g. photo ID). The 
+convenience provided by the system would follow "increasing returns" 
+with additional trust as any human interaction would be a bottleneck 
+in an autonomous system. The trade-off is not unlike that of the 
+previous paragraph.
+
+=== Privacy
+
+The most important point of contention though is the issue of 
+privacy. Unlike the other two points, I won't voice my opinion on 
+this because any opinions will cause a chunk of the population to 
+immediately discredit the whole project. Also, I'm not convinced 
+about the right way the application should handle privacy. Before 
+anyone shoots the project down because of privacy concerns though, 
+ask yourself whether the current system is really anymore private. 
+More often than not you'll find it's not.
+
+With cryptography, we can guarantee that even though the government 
+authenticates a user and stores his data, it can't actually access 
+any of it. Even if someone opened up the central server and directly 
+read the hard drive, they would find an encoded message only a 
+password held by the user could decode. This is much more privacy 
+than we have now. The problem with this is two-fold: if a user 
+forgets their account details nothing can be done to recover their 
+data. Secondly, it could be beneficial for a government to have 
+access to your data. In fact the whole point of designedGov is just 
+that, liberating data to simplify interactions.
+
+Perhaps a more practical solution would be to have each host store 
+user data associated with them on their servers. While they can 
+access it at will, other hosts need permission. The governmental 
+organization in charge of health could store and freely access a 
+person's medical records (someone can't really give a password if 
+they're unconscious in an ambulance) while say the organization in 
+charge of tax collection would need a user's permission if they 
+wanted to check if you had a certain disability for tax benefits. 
+Every time an account is accessed, this information could be logged 
+and this log could be made available to the user, but there would be 
+no way of guaranteeing an organization doesn't access their own data 
+on a user without his permission in this system.
+
+Another point of contention is whether certain authorities should 
+have access to a user's data and those accesses not be made known to 
+the user (not logged). How much information should police have 
+access to? Would a judge have the authority to pull information from 
+any organization at the request of detectives for an investigation? 
+Giving police the unrestricted ability to secretly read data would 
+greatly ease investigations but would have many worried about them 
+having too much power.
+
+Also, the government could provide a service that allows 
+unrestricted or restricted access to anonymous data. This could lead 
+to very interesting finds. For example, health records could be data 
+mined and novel medical discoveries could be made like an unknown 
+cause of a disease. Studies using traditional methods can take years 
+and millions of dollars but this could be done in a few minutes and 
+be virtually costless.
+
+I plan on implementing the "practical" solution, not because of its 
+merits but because it's closest to the system we have now and so 
+isolates desginedGov from my personal views on the issue. It 
+wouldn't be hard to adpat designedGov to other privacy policies 
+though.
+
+== Background
+
+=== Literature Review
+
+I reviewed a broad range of literature to aid in the creating 
+desginedGov. They fall into the following three categories:
+
+* Theoretical foundation of networking and cryptography
+
+* eGovernance: what has been done, what has/hasn't worked, what 
+software is already available 
+
+* Existing software which can be used in designedGov
+
+==== Theoretical foundation
+
+I read a seminal book on computer networking and supplemented that 
+with reading specifically related to cryptography and internet 
+securtity. More specifically, public key cryptography and digital 
+signing. The internet stack was studied as for now desginedGov will 
+use the internet as a communication medium.
+
+==== eGovernance literature
+
+I found a lot of material that I found lacked substance. There were 
+conferences, best practice standards, frameworks, guidelines, 
+transition models, policy analyses, vague initiatives, etc., but 
+there weren't very many applications or even discussions about real 
+implementations. There are countries with eGovernment applications 
+which are quite comprehensive, but there is little publicly 
+available documentation on them. I contacted a few of the 
+eGovernment departments and I was told the application is closed 
+source. They did point me to some documentation on their public 
+website, but it was very non-technical and was more of a platform to 
+promote their application as opposed to learn about it. Their user 
+authentication system wasn't clear; this is the opposite of what I 
+wish to do. There was a very promising open source eGovernace 
+application but it turned out that development was abandoned and the 
+developers were unresponsive to emails.
+
+
+==== Existing Software
+
+I would be foolish to not leverage existing open source software in 
+implementing designedGov. I read about many different tools in order 
+to determine which ones I could use in desginedGov.
+
+I've decided to use Django to develop example the web interfaces to 
+desginedGov. Django implements most of the cryptography I need to 
+use too. Django is a popular web framework that allows developers to 
+develop dynamic web pages in python, a language I'm quite familiar 
+with. I spent some time reading a book on Django and creating some 
+simple websites. I will still have to learn more next semester 
+before I can use it.
+
+I've also read a few short HTML5/CSS and Javascript tutorials. I did 
+the same with SQL and read the reference manual for Asciidoc (a 
+markup language).
+
+I learned a data serialization language called YAML which I will use 
+to build the data exchange/representation protocol on.
+
+There were some projects that could have provide solutions to the 
+problem of managing access control to a user's resources. I looked 
+into them, and although some of them were good, I finally decided to 
+make the access control simple so that no extra access control 
+language is needed.
+
+=== Required Background Theory
+
+==== Public Key Cryptography
+
+To understand how designedGov works, it's important to understand the 
+cababilities of public key cryptography (PKC). I won't explain how a 
+specific PKC algorithm works, but what it lets us do.
+
+Each person who wants to communicate using PKC has a public key and 
+a private key. Only they know the private key while the public key 
+is published. If a message is encrypted with a public key, it can 
+only be decrypted with the associated private key. This allows 
+anyone who has access to an individual's public key to send an 
+encrypted message that no one else but the individual in question 
+can decrypt.
+
+Let's look at the fictional case of two individuals, Alice and Bob, 
+who wish to communicate with each other while a malisious Eve 
+attempts to listen in.
+
+Alice wants to send Bob a message, the problem is that this message 
+is confidential and Alice doesn't want Eve to hear it. She asks Bob 
+for his public key  and he complies, sending it to him. If Eve is 
+listening in, she can get Bob's public key. This is okay, because 
+it's public anyways. Alice encrypts her message and sends it to Bob. 
+Eve can intercept this message but her attempts at decyphering it 
+would be futile even though she has Bob's public key. Only Bob can 
+decypher the message with his private key that only he has.
+
+==== Digital signature
+
+An individual's public-private key pair can be used for more than 
+just encrypting messages: they can be used for signing them. If an 
+individual creates a message, they can sign it with their private 
+key. This isn't an encryption but is a bit of data that is added to 
+the end of the message called a signature. Since he is the only one 
+who has his private key, he is the only one who can create the 
+signature. What is special about the signature is that only the 
+public key is required to validate that it was indeed the associated 
+private key which created it. This isn't unlike a physical signature 
+on a legal document: only one person can create it but anyone can 
+look at it and see if it's real. Thankfully, digital signatures 
+don't carry the same forgery risks as their physical counterparts.
+
+==== Certificate Authority
+
+This system is all good and Dandy, but the system is vulnerable when 
+Bob sends Alice his public key. If Eve is resourceful enough, she 
+can intercept it and send Alice her own public key. Alice would 
+think it's Bob's and use it to encrypt her message. When she sends 
+it back to Bob, Eve will intercept it and decrypt it with her 
+private key. What is needed is a way to ensure Bob's public key 
+belongs to him. If Alice and Bob had met before in person, they 
+would have been able to exchange public keys. This would remove the 
+vulnerablitiy but would defeat the whole purpose of PKC which is to 
+be able to safely send messages to people you haven't necessarily met.
+
+There are several solutions to this problem, and the one designedGov 
+implements is to have a certificate authority which hosts everyone's 
+public keys. Everybody keeps the certificate authority's public key 
+and so can communicate with it safely. When Alice wants to send a 
+message to Bob, instead of asking Bob for his public key, she can 
+ask the certificate authority for a certificate that binds Bob's 
+public key to his identity. Her communication with the CIS is 
+encrypted using the public key she already had, so Eve can't give 
+her a fake public key like before.
+
+== Design and Implementation
+
+designedGov is a protocol hosts use to communicate with users. 
+Besides the central certificate authority, there is nothing to 
+implement. My deliverables will be a specification of the 
+designedGov. To make things more concrete though, I'll make a 
+library which can be used by users and hosts in order to facillitate 
+use of desginedGov. I'll also create toy host and client programs as 
+a proof of concept. These programs will use the aformentioned 
+libraries.
+
+=== designedGov specification
+
+The first iteration of the designedGov specification is largely 
+complete. I say first iteration because it's overly simple at this 
+stage for it's intended purpose and if it were to take off a more 
+robust and complete specification would be needed. The libraries and 
+toy programs I am to implement will follow this first iteration 
+specification.
+
+designedGov will offer two services: user identity authentication 
+and an data representation/exchange protocol (dG protocol). The 
+first service will be divided into three layers: the user 
+definition, the central certificate authority and the handshaking 
+protocol. The dG protocol is used once two users have authenticated 
+each other; it defines how a host presents account data to it's 
+clients and how clients interact with their accounts.
+
+Hosts will create applications which use these two services. These 
+applications manage client accounts. An example host could be a health 
+organization and they have an application which allows patients to see 
+medical records and schedule medical appointments.
+
+Clients will use interfaces to access host applications. This is 
+analogous to how web users use a web browser to interact with web 
+servers. The interface can be created by the hosting organization 
+themselves, but anyone is free to make one for any application (or set 
+of applications) since the application follows the open designedGov 
+protocols. As a reference implementation, an interface will be created 
+which unifies several frequently used government hosts (similar to a 
+web portal).
+
+[NOTE] 
+The host applications and client interfaces aren't part of the 
+desingedGov specification. designedGov is designed with them in mind 
+(in fact designedGov is designed for them), but it doesn't place any 
+constraints on how they should built. As long as they comply to the 
+standard, people are free to implement them as they wish. This allow 
+simple modification to old systems to make them designGov compliant 
+and allows client interfaces to be quickly develloped for novel 
+platforms.
+
+The software stack looks like this, with each layer using services 
+provided by the lower layers:
+
+* client interface
+* host applications
+* data representation/exchange protocol (dG protocol)
+* handshaking protocol
+* central certificate authority
+* user definition
+
+==== Layer description
+
+===== User definition 
+
+Each user will have a user number along with a public/private key 
+pair. Their private key will be know only to them while their user 
+number and public key will be held in a central certificate 
+authority available to all. We might see the need to give each user 
+a password which is solely used in changing their public key located 
+on the Central Certificate Authority. This will be useful for cases 
+of users loosing or having their private keys stolen. It might also 
+allow users to change their user number (or create an alias for it) 
+if this is needed.
+
+.user number 
+
+The user number will be a 64-bit number. This will allow about 
+1.84e19 unique numbers. The first 4 bits will signify the type of 
+user. At the point of writing this document, the types of users are 
+listed below. This list is preliminary and will likely be changed.
+
+* individual (This might be split up by citizenship status but for now 
+isn't to avoid possible discrimination)
+* federal government organization
+* provincial government organization
+* municipal government organization
+* other government organization
+* non-profit NGO
+* for profit organization
+* other
+
+This user number can be stored in a QR-code for quick and easy 
+tranferal.
+
+.public/private key
+
+The public and private key will need to be large enough to ensure 
+security even as computational capacity increases. It might 
+be advantagious to give organizations larger key lengths than 
+indiciduals, but for now we'll say all key lengths are 3072 bits. 
+The specific encryption algorithm used will be decided at a later 
+time. 
+
+
+[NOTE]
+It would likely be necessary for users to have to regularly change 
+their public keys.
+
+.password
+
+This password will be the user's way to prove he is the owner of a 
+number in the case that their private key is lost or stolen.
+
+===== Central Certificate Authority
+
+While the private key will only be known to the user, the public key 
+will be held by the Central Certificate Authority (CCA). The CCA 
+will contain a list of all existing user numbers and their 
+associated public keys. Any user will be able to query it for the 
+public key associated with a user number. The server might also 
+contain additional user information such as what type of user it is 
+(citizen, government organization, for profit company, ...) and 
+their IP address if applicable. The CCA will have it's own 
+public-private key pair which is the only thing needed for a user to 
+be able to authenticate the identities of other users.
+
+Users will be able to cache the public keys of other users to speed 
+up communication and be less dependant on the CCA. This way, if ever 
+the Central Certificate Authority goes down, organizations will be 
+able to operate as normal save the ability to add new users.
+
+The Central Certificate Authority will keep a record of each user's 
+password and this password will give them the ability to modify 
+their public key. The host applications will regularly query the CCA 
+for any public key changes; this will ensure the old and possible 
+compromised key quickly gets removed from the system.
+
+[NOTE]
+The Central Certificate Authority is really just a user like any 
+other. It has it's own user number and public/private key. The key 
+difference is that since the CCA is the server that authenticates 
+username/public-key pairs, there is no authority that authenticates 
+the CCA. The public key will need to be gotten from a trusted user 
+who already has the public key. This key will also be widely 
+published on the web. Like other users, it might be necessary to 
+update the CCA's public key. This might be done on a regular 
+interval (say each week) and the server will authenticate it's new 
+key with it's old one.
+
+===== handshaking protocol
+
+Before secure data exchange can occur, the client and host 
+application need to authenticate each other's identities. A client 
+will initiate communication by opening a TLS session. The client and 
+host will use their user public-private key pairs in the TLS 
+handshake which will authenticate their identities. If either user 
+doesn't have the other's key cached, they will query the Central 
+Certificate Authority for it. Once the TLS session is open, 
+communication can begin.
+
+[NOTE]
+In the description, I mentioned a client and an application host 
+connecting, but in reality any two users can perform the handshaking 
+protocol.
+
+===== data representation/exchange protocol (dG protocol)
+
+This will be the most complicated part of designedGov. It governs 
+how users will exchange information. The specifics are 
+described in the appendix, but I'll provide an overview here.
+
+In this designedGov iteration, the dG protocol will only allow for 
+communication between a hosting application and a client. 
+"Peer-to-peer" communication isn't supported but might be added later.
+
+All communication will be of the form of a client interacting with 
+their account on a host application. An example host application 
+could be the Canadian Revenue Agency. Their application would keep 
+an account for every tax paying user and users would be able to 
+provide relavant information to them via their application.
+
+Data will be exchanged between users after handshaking is complete, 
+they will communicate by passing data in a special format, from here 
+on out called dG format, which will be a subset of the popular YAML 
+format. Each dG message will be either a requests or a responses. A 
+request can contain things such as a request for data, an operation 
+to perform on the account, or a granting of permissions. A response 
+relates to a request and can contain data or success/error messages.
+
+All data contained in a client account on a host application will be 
+translated to a dG object before being sent out. For those 
+unfamiliar with YAML, an object contains a list of key-value pairs 
+and can also contain child objects. This way, each key-value pair 
+can be accessed by traversing a root object. This object will follow 
+a standard which makes it easy for users to see what data is 
+available to them, what they can modify, and what permissions others 
+have over their data. A client can query a host for the information 
+stored on his account and the response will be the root object for 
+that account. This response might point to files other than the root 
+object file when client data is too big to be conviniently placed in 
+a single message. An example of this could be a company's history of 
+balance sheets in their account with the CRA. Instead of their root 
+object containing all past balance sheets, it contains a list of 
+pointers to objects (one for each financial year). These objects can 
+themselves point to others (one for each month). Some files pointed 
+to in dG files can also be of formats other than dG. These non-dG 
+files will be for data that can't be appropriatly serialized in a dG 
+object such as pictures. A possible use for this would be storing 
+x-ray images in a patient's medical record.
+
+A client can make requests to read/modify not only his account but 
+the account of others too. This is the one of the benefits of 
+designedGov: automating data exchange between users. In order to be 
+able to read/modify another user's account, permission must be 
+granted. Host applications specify who has access to a clients data 
+and how the client can grant access.
+
+See the appendices for a more detailed description of the dG protocol.
+
+===== host applications
+
+Each organization that wishes to keep information on users and 
+interact with them will host an application. Like any other user, 
+this organization will have it's own user name and public key, but 
+unlike regular users, they will be able to accept incomming 
+connections from other users through their applications. Each 
+government organization that interacts with the public will have one 
+of these applications. The application will follow the designedGov 
+protocols
+when interacting with clients. Each application will be responsible 
+for defining their own dG object hierarchy and will make this format 
+public. This way, when a user wants to request a specific key-value 
+pair, they will know the path from the root object. The applications 
+are also resonsible for defining who can read/write what and what 
+permission options are available for each object.
+
+===== client interface
+
+The end user obviously isn't expected to write dG objects himself, 
+so how will users interact with their various accounts? The answer 
+is they'll access their accounts through a client interfaces. Client 
+interfaces are programs which adhere to the designedGov protocols 
+and facilitate users accessing their accounts. This means they take 
+care of managing a users public-private key and using it when 
+necessary to enable open a connection with a host and exchange dG 
+objects. It presents the dG objects in a way appropriate for the 
+platform. A client interface can be tailored to a specific host 
+application, can work with a group of host applications or can even 
+be general purpose enough that it works with any host application.
+
+As stated above, a reference client interface will be implemented 
+which is tailored to the most commonly used government host 
+applications. For this iteration of designedGov, the reference 
+implementation will be a browser plugin along with a web portal. The 
+plugin will act as a general purpose client interface but will 
+behave specialy in conjunction with the webportal to tailor the data 
+presentation to the hosts accessible from the portal.
+
+Although a reference web interface will be implemented as part of 
+designedGov, others will be encouraged to develop their own 
+competing interface for various platforms.
+
+=== What is left to do
+
+The designedGov specification is mostly complete, so the next step 
+is to make libraries which ease the developement of client 
+interfaces and host applications. This might eventually evolve into 
+a "designedGov SDK" but for now it'll just provide some common 
+functionality like generating/parsing dG objects or handshaking.
+
+After the libraries are written, I'll use them to write a Central 
+Certificate Authority, a client interface and a couple host 
+applications. The CCA should be quite straightforward. Although I 
+haven't settled on which host applications I'll create, I'm thinking 
+it'll be something like a health services provider, a library and a 
+bank. The client interface will be a browser plugin which makes the 
+browser designedGov complient and provideds a GUI for communicating 
+with hosts. This plugin will change behavior when accessing certain 
+host applications it regognizes: the plugin will tailor the display 
+to the applications.
+
+== Testing
+
+No testing has been done so far. When writing the programs, I'll 
+follow something akin to test driven development, testing my code at 
+every iteration. That being said, the performance and reliability of 
+the programs aren't what's being evaluated. They are just toy 
+applications used to demo the system. The real test will be wether 
+non-technical people can understand the designedGov and can see 
+themselve using it. To test this, I'll explain my project and have 
+people test out the toy programs. I'll gauge their level of 
+understanding and ask them about the usability. I'll then use their 
+feedback to modify the way I explain the project, the toy programs 
+or even the designedGov specification itself.
+
+Although I'll have to think out the procedure more as the programs are 
+develloped, at this point in time I plan to gather a group of about 
+3-10 people and give them a 20 minute presentation of designedGov and 
+how it works. I'll then give them access to client interfaces and give 
+them certain tasks like: "deposit $40 in your ficticious designedGov 
+bank account" or "retrieve your ficticious x-ray from 2007". I can 
+also give them security related question or tasks like "find which 
+public-private key pair is fraudulent using the CCA". I will 
+then be able to measure their success and get their feedback about 
+designedGov.
+
+Meeting groups individually would be very time consuming, so 
+instead, I might create a website that gives an explanation of 
+designedGov and then asks them to participate in a simulation of 
+it's use and provide feedback. This would allow me to reach a very 
+large amount of people and would also help with gaining project 
+visibility.
+
+If I do the web based testing approach, it might be better to not 
+actually implement standalone client interfaces and host applications 
+but simulate them. This would save me from implementing the 
+handshaking protocol and all the cryptography functions that go with 
+it. The simulation, all done in browser, could show a virtual smart 
+phone with a virtual client interface that the tester uses  accomplish 
+his tasks.
+
+I don't think I'll be able to make both standard compliant toy 
+programs and a web based simulation so I'll have to decide on one. 
+I'm leaning towards the web based simulation as it contributes to 
+overcoming designGov's greatest obstacle: getting people to want it.
+
+== Impact on society and risks
+
+Considering I'm undertaking a software project, some of the required 
+discussion topics don't apply very well. Most of what is discussed 
+here has been covered in previous documents.
+
+=== Use of non-renewable resources
+
+As this is a software project, no non-renewable resources will be 
+used. This software will run on hardware that individuals would have 
+had anyways (e.g. smartphones).
+
+=== Environmental benefits
+
+If designedGov is widely adopted, we could potentially see some 
+environental benefits. Once source of this would the it's role in 
+the ongoing obsolescence of paper documents. Another benefit would 
+be the reduced need for individuals to be physically present (hence 
+needing to be transported there) in order to authenticate identities.
+
+=== Safety and risk
+
+Although designedGov doesn't pose any kind of safety risks in the 
+sense of mortal danger, there are risks from an identity security 
+point of view. One of the main goals of designedGov is to increase 
+identity security, but there are some new risks associated with 
+designedGov not found in our current system. Most of these new risks 
+arise from some users being uneducated about digital security. 
+Besides those, the main risk is how, with designedGov, an identity 
+theif needs to "put himself out there" much less as there will be 
+more opportunities for him to authenticate himself from behind a 
+computer instead of in person where he might be spotted by a camera. 
+That being said, the difficulty of stealing an individual's identity 
+when said individual exercises even moderate caution is much higher 
+with designedGov.
+
+=== Benefits to society
+
+The benefits to society and the increased security mentioned above 
+and increased convinience. There will be much less bureaucracy to 
+deal with and many tasks that currently take hours or even days 
+(e.g. filing taxes) can be automated. This system will also make 
+much more information available to us about our society and said 
+information could provide unforseen benefits (e.g. hospital records 
+could give us previously unknown information about a disease).
+
+== Conclusion
+
+designedGov is an application that attempts to revolutionze how we 
+deal with the timeless problem of identity authentication. 
+Authentication was first done with the signature and the wax seal, 
+then came the identity document (ID cards), then the username/password 
+and finally public-key cryptography. It's about time the our society 
+takes the next step. The services offered by designedGov 
+are simple, but what can be built on top it that matters. The 
+host applications can replace current service interfaces and greatly 
+simplify and secure our lives.
+
+This semester I detailed the first iteration of a specification for 
+designedGov. Next semester, I'll follow one of paths: implementing the 
+toy client interface and host applications as a proof of concept or by 
+making a web-based simulation to test desginedGov's useablity and 
+increase it's visibility.
+
+Doing this project, I've learned that there might not be such a 
+thing as the perfect way to do things. I spent a lot of time looking 
+into various projects and systems and trying to make a system where 
+I'll never have to look back and say that I regreted a design 
+decision and am stuck with the consequences. The reason for this is 
+that I see that a lot of the current systems I use suffered from a 
+lack of foresight in design. The actual implmentation was going 
+along to slowly though, so I decided to instead accept that this 
+first iteration would be far from perfect. I did however design 
+modularly so that individual pieces (layers) could be upgraded as 
+needed. I now think I'll learn more efficiently about how to design 
+the system by actually implementing it and testing it out than by 
+reasearching projects.
+
+== Appendix A: data exchange/representation protocol
+
+=== Introduction
+
+Communication between users and a host applications will
+consist of them passing YAML objects back and forth (henceforth
+called dG objects). The specific medium used to pass these objects
+isn't of great importance, so we'll assume it's occurring over https.
+
+The client and host use their keys to open a session and once
+handshaking is complete, the client sends a Request dG object. This
+Request object contains the information relating to what the client
+wants from the host. The host processes the request by ensuring
+the client has the relevant permissions and performing the desired
+action if so. The host then replies with a Response dG object which
+states whether the action was a success or not and contains data
+related to the nature of the request (e.g. if the request was a
+request to read a certain value, the response would contain said
+value).
+
+So far we have seen two dG object types: requests and responses. A
+third type is used by hosts to publicize the structure of their client
+accounts along with details about the nature of the data in them.
+These objects are called templates.
+
+All dG objects conform to the following structure. Any element
+preceded by a tilde is optional.
+
+----------------------------------------------
+---
+[template | request | response]:
+	<object content>
+
+author ID: <ID of user who authored this document>
+author key: <author's public key>
+~signature: <signature of author>
+...
+----------------------------------------------
+
+This document will detail how these 3 dG objects are structured and
+why they are structures as such.
+
+=== Template Object
+
+Template objects are publicly available from host applications and 
+allow users to see the structure and content of an host's accounts 
+without even needing to have their own account. Template objects 
+standardize the process of users exploring what kind of data they 
+have access to in their account and how they can interact with in.
+
+==== Structure
+
+Template objects are dG objects so they adhere to the structure
+detailed above. The object content section (the only part that varies
+between object types) of template types is detailed below.
+
+----------------------------------------------
+host name: <host name>
+short_description: <description of account purpose>
+~long_description: <longer description>
+data_map:
+	<data map>
+
+actions:
+	<list of actions>
+----------------------------------------------
+
+==== Data Map
+
+A data map looks like this.
+
+----------------------------------------------
+<data 1 name>:
+	<data_item 1>
+
+~<more data_items>
+----------------------------------------------
+
+
+A data_item conforms to the following structure.
+
+----------------------------------------------
+type: "inode | list | regular | image | binary blob"
+~access_policy: <access policy>
+is_optional: "true | false"
+~description: <description of data>
+~children: <data map of children items or single item>
+----------------------------------------------
+
+
+type::
+	Type of the data_item. These are the first types but others could
+	be added. inode simply means that the type isn't a value but
+	contains children which themselves are data_items. data_items of
+	type regular are items which conform to YAML's built-in types
+	(i.e. numbers, strings, associative array, list).
+
+access_policy::
+	The access policy describes who has access to data and how the
+	owner can grant access. The syntax of the access policy is
+	detailed in a later section.
+
+is_optional::
+	Some data_items aren't necessarily present in all accounts. This
+	field specifies whether the data_item might not be in an account.
+
+description::
+	Description of the data_item.
+
+children::
+	Only inodes have a children field. In the case of inodes, 
+	children field contains a data map with child data_items inside. 
+	In the case of lists, the children field contains a single data 
+	item. A list can have several data items of the same form and 
+	the child data item specifies this form. Some host applications 
+	could have large and complex account structures. Putting all of 
+	this in a single file and transmitting it whenever anyone wants 
+	to know about how the account is structured would impractical. 
+	Several template files can be used to describes different parts 
+	of the data structure. In the case where a inode type doesn't 
+	have a children field, the children can be accessed in the 
+	remote file. How a client fetches other template will be 
+	described later.
+
+
+
+
+
+===== Access policy
+
+By default, the account client will have read access to all fields 
+while the host will have read and write access. All other users have 
+no access. The access policy section details how permissions on the 
+specific piece of data differ from this. All permissions are 
+inherited recursively by any children data items.
+
+The access policy will consist of a list of user ID/permission
+pairs. A user ID permission pair looks like this.
+
+	<user ID number> : <permissions>
+
+The permission part can be 'r', 'rw' or the probably seldom used 'w' 
+(write access without read access). The user ID number will have two 
+aliases: "client" and "host". These will make the common case of 
+changing the account client's or the host's permissions more 
+legible. The access policy also shows what kind of permissions a 
+user can grant. This is specified after the user's permissions as a 
+'g' followed by the specific permissions they can grant. A possible 
+access policy field could look like this:
+
+----------------------------------------------
+access_policy:
+	- cllient: rw gr
+	- 7d4f4e363e: r
+	- 4e277a5539: rw
+----------------------------------------------
+
+[NOTE] 
+I might add another permission called 'a' which causes the host to 
+send an alert to the user ID when the data field is changed. At this 
+point there is no standard way to send messages to a user in 
+designedGov
+
+==== Actions
+
+Actions allow users to interact with accounts in ways not easily
+possible with simple reads and writes. An example could be
+scheduling a doctor's appointment; it would feel unnatural to
+schedule an appointment by writing to certain data locations.
+
+A list of actions looks like this
+
+----------------------------------------------
+- <action name 1> :
+	<action 1>
+~- <more actions>
+----------------------------------------------
+
+An action is structured as so:
+
+----------------------------------------------
+parameters: <parameters>
+caller_list: <list of users who can call the action>
+~description: <description of action>
+----------------------------------------------
+
+The parameter field is a map of key value pairs which allow the
+action caller to pass some data. It's structured as below.
+
+----------------------------------------------
+parameters:
+	<param 1>: <description of param 1>
+	~<more parameters>
+----------------------------------------------
+
+Example actions for the Quebec automobile society:
+
+----------------------------------------------
+actions:
+	schedule_test:
+		parameters:
+			time: time of the test
+			location:  >
+				test can take place in Dorval (DORVAL) or in 
+				Montreal (MONTREAL).
+			type: is it a WRITTEN test or a PRACTICAL test
+			payment: authorization of transfer of $100 to the SAAQ
+
+		caller_list: owner
+		description: schedule a test to obtain driver licence.
+
+	add_car:
+		parameters:
+			used_or_new: is the car USED or is it NEW
+			purchase_form: form obtained when vehicle was purchased
+			payment: authorization of transfer of $200 to the SAAQ
+
+	remove_car:
+		parameters:
+			car_ID: ID of the car on record you'd like to remove
+			selling_form: (optional) form from car sale
+----------------------------------------------
+
+==== Example
+
+To put it all together, let's look at a simple example template.
+We'll build off the actions we used above.
+
+----------------------------------------------
+---
+host name: SAAQ
+short_description:  >
+	The Société de l'assurance automobile du Québec or SAAQ
+	(English: Quebec Automobile Insurance Corporation), is a
+	Quebec crown corporation responsible for licensing drivers
+	and vehicles in the province and providing public auto
+	insurance
+
+data_map:
+	vehicles:
+		type: list
+		is_optional: false
+		description: list of cars user own or has owned
+		children:
+			car_ID: car ID
+			make: make of car
+			model: car model
+			year: year of car model
+			color: color of car
+			car_purchase_date: date car was purchased by account owner
+			date_of_disposal: data account owner lost possession of car
+
+	driving_points:
+		type: regular
+		is_optional: false
+		description:  >
+			points account owner has and the total points
+			available to him in the form of POINTS_LEFT / TOTAL
+			POINTS
+		access_policy:
+			owner: r gr
+				# the owner can grant access to they
+				# points as many insurance companies use this
+				# data for premium calculation.
+
+actions:
+	schedule_test:
+		parameters:
+			time: time of the test
+			location:  >
+				test can take place in Dorval (DORVAL) or in 
+				Montreal (MONTREAL).
+			type: is it a WRITTEN test or a PRACTICAL test
+			payment: authorization of transfer of $100 to the SAAQ
+
+		caller_list: owner
+		description: schedule a test to obtain driver licence.
+
+	add_car:
+		parameters:
+			used_or_new: is the car USED or is it NEW
+			purchase_form: form obtained when vehicle was purchased
+			payment: authorization of transfer of $200 to the SAAQ
+
+	remove_car:
+		parameters:
+			car_ID: ID of the car on record you'd like to remove
+			selling_form: (optional) form from car sale
+...			
+----------------------------------------------
+
+=== Request
+
+When a user wants to interact with an host, they create a
+request and send it to the host's application. The request can be
+to read some data, write some data or call an action.
+
+==== Structure
+
+A request object consists of a list of requests and is structured as
+follows.
+
+----------------------------------------------
+request:
+	- <request item 1>
+	~- <possibly more request items>
+----------------------------------------------
+
+There are three request item types. Read, write and action call
+type. A read or write request items is structured like this:
+
+----------------------------------------------
+req_type: "read | write"
+data_path: <path to data>
+~new_value: <new data to be written in case of write>
+----------------------------------------------
+
+The data_path takes on the value of the path to the data to
+read/write. As seen in the template section, account data in
+organized in a tree. A path is described as it is in most programming
+languages with a series of names separated by periods. lists are
+indexed with brackets (C-style).
+
+An action call request looks like this:
+
+----------------------------------------------
+req_type: "action call"
+action_name: <name of action>
+~paramaters: <map of parameter name/values>
+----------------------------------------------
+
+
+==== Example
+
+To make things more concrete, let's say an individual has just
+bought a new car and also wants to check up on how many points they
+have left on their licence. They would create a request object that
+looks like this.
+
+----------------------------------------------
+---
+request:
+	- req_type: read
+	  data_path: driving_points
+		
+	- req_type: action call
+	  action_name: add_car
+	  parameters:
+	      used_or_new: NEW
+	      purchase_form:
+		      date_bought: ...
+		      dealer: ...
+		      ...
+		  payment:
+		      payment_method: credit
+		      ...		      
+
+author ID: 5e7a255c43
+author key: 23252d22736b7a257538355a7c31233f273e763a37685027433852455d
+signature: 6e3521214a5e3f496a563d642b21595344516d67716a6e463a70713764
+...
+----------------------------------------------
+
+=== Response
+
+When a client makes a request, the host will reply with a response.
+The purpose of this reports on the success of the request and provides
+any relevant data (such as data requested in a read).
+
+==== Structure
+
+The response object contains a response item for each request item.
+Naturally, they will have similar structures.
+
+----------------------------------------------
+response:
+	- <response item 1>
+	~- <possibly more response items>
+----------------------------------------------
+
+A response item:
+
+----------------------------------------------
+resp_type: <same as corresponding request>
+was_succesful: "true | false"
+~failure_cause: <explanation for transaction failure>
+~value_read: <value of data item in case of read>
+~action_call_resp: <action call might need to return specific data>
+----------------------------------------------
+
+==== Example
+
+Let's look at a possible response to the request example seen above.
+
+----------------------------------------------
+---
+response:
+	- resp_type: read
+	  was_succesful: true
+	  value_read: 2 / 10
+		
+	- resp_type: action call
+	  was_successful: false
+	  failure_cause: dealer could not confirm car purchase
+
+author ID: 5e7a255c43
+author key: 23252d22736b7a257538355a7c31233f273e763a37685027433852455d
+signature: 6e3521214a5e3f496a563d642b21595344516d67716a6e463a70713764
+...
+----------------------------------------------
+
