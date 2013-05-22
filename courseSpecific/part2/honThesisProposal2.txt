@@ -1,0 +1,62 @@
+= Project (part 2) Proposal
+
+== Basic info
+
+Name:: Chris Morin
+
+ID:: 260344722
+
+Project title:: designedGov
+
+Group members:: Chris Morin
+
+Project supervisor:: Bettina Kemme (Computer Science)
+
+Intellectual property::
+	All work will be owned by me. Once the project gains traction I'll release it under an open-source liscence such as the LGPL.
+
+Non-disclosure agreement::
+	No NDA is required.
+
+Advisor meetings::
+	I'll try to meet with my advisor every 3 weeks. There will also be email communication on an as-need basis.
+	
+Project requirements::
+	No lab space will be needed. All research and development will be done on my personal computer at home. I might need some server space to test the application. This will be discussed with my supervisor.
+
+<<<
+
+== Project deadlines and timeline
+
+.Timeline
+[options="header"]
+|=======================
+| Month| Week of the  | Task
+.3+|May    | 13 .2+| Make core libraries
+| 20
+| 27 | Make simple client interface (no GUI)
+.4+| June   | 3 | Extend core libraries for host development
+| 10 | Make Certificate Authority
+| 17 | Make a simple host application
+| 24 | testing system, debugging and refactoring
+.4+| July    | 1 | make client GUI
+| 8 | make a few more host apps
+| 15 | polish up GUIs, have individuals try program  
+| 22 | if time permits, wrap it up as an AJAX web app and put it online
+|=======================
+
+
+.Deadlines
+[options="header"]
+| Date | Deliverable
+| June 3 | Progress Report 1
+| July 1 | Progress Report 2
+| July 8 | Impact on Environment and Society Plan
+| July 15 | Final Report Draft
+| July 31 | Final Report
+
+
+
+== Project abstract
+
+The desginedGov protocols were roughly specified in the first part of this course. In this part, I'll devellop some demo programs to fill the various roles. The programs in question will be a Certificate Authority, a client interface and a few host applications. This demo programs will be simplified versions of the programs envisioned in the first part of the course. If time permits, I'll wrap these programs up in an ajax web app to allow a wide audience to try it and provide feedback.

@@ -1,0 +1,12 @@
+# Generate an RSA private key using default parameters:
+openssl genpkey -algorithm RSA -out key.pem -pkeyopt rsa_keygen_bits:1024
+
+# Generate certificate request from private key:
+openssl req -new -key key.pem -out req.pem
+
+# Combine both previous:
+openssl req -newkey rsa:1024 -keyout key.pem -out req.pem
+
+# Generate self-signed root key and certificate
+openssl req -x509 -newkey rsa:1024 -keyout key.pem -out req.pem
+

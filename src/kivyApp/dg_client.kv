@@ -1,0 +1,81 @@
+#:kivy 1.0
+
+# TODO: describe file action popup
+
+DG_Client:
+	padding: 20
+	do_default_tab: False
+	
+	TabbedPanelItem:
+		text: 'Connect to Host'
+		
+		BoxLayout:
+			orientation: 'vertical'
+			
+			# recent hosts. might change to "top" hosts and make a tree view
+			BoxLayout:
+				orientation: 'horizontal'
+				
+				Label:
+					text: 'Recent: '
+				
+				ListView:
+					item_strings: [str(index) for index in xrange(5)]
+					
+			BoxLayout:
+				orientation: 'horizontal'
+				
+				Label:
+					text: 'Address: '
+				
+				# there is no button here, enter to connect
+				TextInput:
+					multiline: False
+					size: 10, 10
+				
+			BoxLayout:
+				orientation: 'horizontal'
+				
+				Label:
+					text: 'NFC\nor  :\nBluetooth'
+				
+				ListView:
+					item_strings: [str(index) for index in xrange(5)]				
+				
+				
+				
+			
+	TabbedPanelItem:
+		text: 'Files'		
+		
+		BoxLayout:
+			orientation: 'vertical'
+			
+			# recent hosts. might change to "top" hosts and make a tree view
+			BoxLayout:
+				orientation: 'horizontal'
+				
+				Label:
+					text: 'Download file: '
+				
+				TextInput:
+					multiline: False
+					hint_text: 'Enter URL'
+					
+					
+			BoxLayout:
+				orientation: 'horizontal'
+				
+				Label:
+					text: 'Browse local: '
+				
+				# there is no button here, enter to connect
+				FileChooserListView:
+								
+	
+	TabbedPanelItem:
+		text: 'Settings'
+		
+		Label:
+			text: 'TODO'
+
