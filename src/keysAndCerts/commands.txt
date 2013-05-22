@@ -10,3 +10,6 @@ openssl req -newkey rsa:1024 -keyout key.pem -out req.pem
 # Generate self-signed root key and certificate
 openssl req -x509 -newkey rsa:1024 -keyout key.pem -out req.pem
 
+# Sign a certificate request using the CA certificate above and add user certificate extensions
+openssl x509 -req -in req.pem -extfile openssl.cnf -extensions v3_usr \
+        -CA cacert.pem -CAkey key.pem -CAcreateserial
