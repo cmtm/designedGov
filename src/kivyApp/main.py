@@ -1,14 +1,15 @@
 import kivy
-kivy.require('1.0.5')
+kivy.require('1.7.0')
 
 #from kivy.uix.widget import Widget
-#from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.tabbedpanel import TabbedPanel
 from kivy.app import App
 from kivy.properties import ObjectProperty, StringProperty
+from kivy.lang import Builder
 
 
-class DG_Client(TabbedPanel):
+class MainScreen(TabbedPanel):
     '''Create a controller that receives a custom widget from the kv lang file.
 
     Add an action to be called from the kv lang file.
@@ -20,12 +21,18 @@ class DG_Client(TabbedPanel):
         self.label_wid.text = 'My label after button press'
         self.info = 'New info text'
 
+class BeaconsfieldLibrary(BoxLayout):
+	pass
+
+class HealthCanada(TabbedPanel):
+	pass
 
 class DG_ClientApp(App):
-	pass
-"""
-    def build(self):
-        return DG_Client(info='Hello world')
-"""
+	def build(self):
+		# return Builder.load_file('beaconsfieldLibrary.kv')
+		# return Builder.load_file('mainScreen.kv')
+		return Builder.load_file('healthCanada.kv')
+
+
 if __name__ == '__main__':
     DG_ClientApp().run()

@@ -1,0 +1,31 @@
+BeaconsfieldLibrary:
+	orientation: 'vertical'
+
+	# recent hosts. might change to "top" hosts and make a tree view
+	BoxLayout:
+		orientation: 'horizontal'
+
+		Label:
+			text: 'Books on loan: '
+
+		ListView:
+			item_strings: [str(index) for index in xrange(5)]
+
+	BoxLayout:
+		orientation: 'horizontal'
+
+		Label:
+			text: 'Ammount due: {}'.format('')
+
+		Label:
+			text: 'Date due: {}'.format('')
+		
+		Button:
+			text: 'Pay Now'
+			
+	BoxLayout:
+		orientation: 'horizontal'
+
+		Button:
+			text: 'Search catalogue and/or reserve book'
+	
