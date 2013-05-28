@@ -22,7 +22,9 @@ class MyListView(ListView):
 		        'size_hint_y': None,
 		        'height':25}
 	
-	def listUpdated(self, instance, val):
+	
+	
+	def on_data(self, instance, val):
 		list_adapter = ListAdapter(data=self.data,
 		                    args_converter=self.args_converter,
 		                    cls=ListItemButton,
@@ -31,7 +33,6 @@ class MyListView(ListView):
 		        
 	def __init__(self, **kwargs):		
 		super(MyListView, self).__init__()
-		self.bind(data=self.listUpdated)
 		
         
 	
