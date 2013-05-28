@@ -1,8 +1,12 @@
-from DG_file import DG_file
+from DG_file import DG_file, WrongFileType
+
 
 class Request(DG_file):
+	
+	typeName = "request"
+	
 	def __init__(self, authorId = 0, content = []):
-		super().__init__("request", authorId, content)
+		super(Request, self).__init__(authorId, content)
 	
 	def addReadItem(self, data_path):
 		self.tree["content"].append({"type": "read", "data path": data_path})
@@ -12,3 +16,5 @@ class Request(DG_file):
 	
 	def addActionItem(self, action_name, parameters = {}):
 		self.tree["content"].append({"type": "action call", "action name": action_name, "parameters": parameters})
+	
+

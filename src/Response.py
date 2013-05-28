@@ -1,8 +1,12 @@
-from DG_file import DG_file
+from DG_file import DG_file, WrongFileType
+
 
 class Response(DG_file):
+	
+	typeName = "response"
+	
 	def __init__(self, authorId = 0, content = []):
-		super().__init__("response", authorId, content)
+		super(Response, self).__init__(authorId, content)
 	
 	def addReadItem(self, wasSuccessful, failureCause = None, valueRead = None):
 		self.tree["content"].append({"type": "read", "was successful": wasSuccessful})
@@ -22,5 +26,5 @@ class Response(DG_file):
 			self.tree["content"][-1]["returned"] = returned
 		else:
 			self.tree["content"][-1]["failure cause"] = failureCause
-	
-		
+
+

@@ -2,41 +2,62 @@
 
 # TODO: describe file action popup
 
-MainScreen:
-	padding: 20
-	do_default_tab: False
+Main:
+	name: 'main'
+	
+	TabbedPanel:
+		tab_width: 200
+		do_default_tab: False
 
-	TabbedPanelItem:
-		text: 'Connect to Host'
+		TabbedPanelItem:
+			text: 'Connect to Host'
 
-		BoxLayout:
-			orientation: 'vertical'
+			GridLayout:
+				cols: 2
+				rows: 3
+				spacing: 20
+				padding: 20		
 
-			# recent hosts. might change to "top" hosts and make a tree view
-			BoxLayout:
-				orientation: 'horizontal'
+				# recent hosts. might change to "top" hosts and make a tree view
+				Label:
+					text: 'Recent : '
+					size_hint_x: 0.3
+
+				MyListView:
+					data: ['b1','b2','b3']
 
 				Label:
-					text: 'Recent: '
-
-				ListView:
-					item_strings: [str(index) for index in xrange(5)]
-
-			BoxLayout:
-				orientation: 'horizontal'
-
-				Label:
-					text: 'Address: '
+					size_hint_x: 0.3
+					text: 'Address : '
 
 				# there is no button here, enter to connect
-				TextInput:
-					multiline: False
+				AnchorLayout:
+					anchor_x: 'center'
+					anchor_y: 'center'
+						
+					TextInput:
+						multiline: False
+						size_hint: (0.6, 0.2)
+						#pos_hint: {'center_y': 0.5}
 
-			BoxLayout:
-				orientation: 'horizontal'
 
-				Label:
-					text: 'NFC\nor  :\nBluetooth'
+				BoxLayout:
+					size_hint_x: 0.3
+					
+					# hacky blank label
+					Label:
+					
+					Label:
+						text: 'NFC\nor\nBluetooth'
+						halign: 'center'
+						pos_hint: {'center_x': 0.5}
+					
+					Label:
+						text: ':'
+						text_size: self.size
+						halign: 'left'
+						valign: 'middle'
+					
 
 				ListView:
 					item_strings: [str(index) for index in xrange(5)]
@@ -44,37 +65,77 @@ MainScreen:
 
 
 
-	TabbedPanelItem:
-		text: 'Files'
+		TabbedPanelItem:
+			text: 'Files'
 
-		BoxLayout:
-			orientation: 'vertical'
+			GridLayout:
+				rows: 2
+				cols: 2
+				padding: 20
+				spacing: 20
+				
 
-			# recent hosts. might change to "top" hosts and make a tree view
-			BoxLayout:
-				orientation: 'horizontal'
+				# recent hosts. might change to "top" hosts and make a tree view
+
 
 				Label:
-					text: 'Download file: '
+					text: 'Download file : '
+					size_hint: (0.3, 0.2)
 
 				TextInput:
 					multiline: False
 					hint_text: 'Enter URL'
-
-
-			BoxLayout:
-				orientation: 'horizontal'
+					size_hint_y: 0.2
 
 				Label:
-					text: 'Browse local: '
+					text: 'Browse local : '
+					size_hint_x: 0.3
 
 				# there is no button here, enter to connect
 				FileChooserListView:
 
 
-	TabbedPanelItem:
-		text: 'Settings'
+		TabbedPanelItem:
+			text: 'User Profile'
 
-		Label:
-			text: 'TODO'
+			BoxLayout:
+				orientation: 'vertical'
+				padding: 20
+				spacing: 20
+				
+				# TODO: I'll want to eventually make a border around this
+				BoxLayout:
+					size_hint_y: 0.8
+					
+					BoxLayout:
+						orientation: 'vertical'
+
+						Label: 
+							text: 'UserID: {}'
+						Label:
+							text: 'Name: {}'
+						Label:
+							text: 'Birth date: {}'
+						Label:
+							text: 'Sex: {}'
+					
+					Image:
+				
+				BoxLayout:
+					size_hint_y: None
+					padding: 20
+					spacing: 20
+					
+					Button:
+						size_hint: (0.25, 0.4)
+						text: 'View QR-code'
+					
+					Button:
+						size_hint: (0.25, 0.4)
+						text: 'change user'
+					
+					
+						
+							
+						
 

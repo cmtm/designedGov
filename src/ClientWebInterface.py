@@ -1,0 +1,31 @@
+import socket, ssl
+from Response import Response
+from Request import Request
+
+class InvalidCert(Exception):
+	pass
+
+class ClientWebInterface:
+	
+	def __init__(self, certfile="certfile.crt", ca_cert="ca_cert.crt", keyfile="keyfile.pem"):
+		
+		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		
+		self.ssl_sock = ssl.wrap_socket(s,
+						   certfile=certfile,
+                           ca_certs=ca_cert,
+                           keyfile=keyfile,
+                           cert_reqs=ssl.CERT_REQUIRED)
+	
+	def sendRequest(self, hostAddress, hostPort, hostUserID, request):
+		
+		self.ssl_sock.connect((hostAddress, hostPort))
+	
+		if self.ssl_sock.getpeercert()['subject'][0][0][1] != hostUserID:
+			raise InvalidCert("Certificate contains wrong userID")
+		
+		self.ssl_sock.sendall(request.serialize())		
+		data = self.ssl_sock.recv(16384)		
+		self.ssl_sock.close()
+		
+		return Response.deserialize(data)

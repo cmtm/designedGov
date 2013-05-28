@@ -23,7 +23,7 @@ ssl_sock.sendall("""Hi there""")
 
 # Read a chunk of data.  Will not necessarily
 # read all the data returned by the server.
-data = ssl_sock.recv(4096)
+data = ssl_sock.recv(16384)
 print(data)
 
 # note that closing the SSLSocket will also close the underlying socket

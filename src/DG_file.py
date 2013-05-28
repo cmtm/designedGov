@@ -3,12 +3,20 @@ import Crypto.Hash.SHA512
 import Crypto.PublicKey.RSA
 import Crypto.Signature.PKCS1_v1_5
 
-
 import User
 
-class DG_file:
-	def __init__(self, dG_type = "", authorId = 0, content = None):
-		self.tree = {"dG_type": dG_type, "content": content, "author ID" : authorId}	
+class WrongFileType:
+	pass
+
+class DG_file(object):
+	
+	typeName = None
+	
+	
+	def __init__(self, authorId = 0, content = None):
+		# self.typeName should really be <className>.typeName
+		# this would require overriding __new__. I might do this later
+		self.tree = {"dG_type": self.typeName, "content": content, "author ID" : authorId}	
 	
 	def sign(self, privateKey):
 
@@ -37,16 +45,20 @@ class DG_file:
 	def serialize(self):
 		return yaml.dump(self.tree)
 		
-	#static factory
-	def deserialize(serialized):
-		serialized = yaml.safe_load(serialized)
-		new_dG = DG_file(serialized["dG_type"], serialized["author ID"], serialized["content"])
+	@classmethod
+	def deserialize(cls, serialized):
+		tree = yaml.safe_load(serialized)
+		
+		if cls.typeName != None and cls.typeName != tree["dG_type"]:
+			raise WrongFileType()
+		
+		new_dG = cls(tree["author ID"], tree["content"])
 		
 		if "signature" in serialized:
-			new_dG["signature"] = serialized["signature"]
+			new_dG["signature"] = tree["signature"]
 			
 		if "author key" in serialized:
-			new_dG["author key"] = serialized["author key"]
+			new_dG["author key"] = tree["author key"]
 		
 		return new_dG
 

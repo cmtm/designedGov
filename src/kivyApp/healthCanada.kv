@@ -1,177 +1,178 @@
-
 HealthCanada:
-	do_default_tab: False
-	tab_width: 200
+	name: 'health'
+	TabbedPanel:
+		do_default_tab: False
+		tab_width: 200
 
-	TabbedPanelItem:
-		text: 'Medical Records'
-		
-		Carousel:
-			direction: 'right'
+		TabbedPanelItem:
+			text: 'Medical Records'
 			
-			# medical records by time
-			FloatLayout:
+			Carousel:
+				direction: 'right'
 				
-				Label: 
-					text: 'By time'
-					bold: True
-					font_size: 30
-					halign: 'center'
-					valign: 'middle'
-					pos_hint: {'top':1}
-					size_hint: (1, 0.1)
-					# wat
-					text_size: self.size
+				# medical records by time
+				FloatLayout:
+					
+					Label: 
+						text: 'By time'
+						bold: True
+						font_size: 30
+						halign: 'center'
+						valign: 'middle'
+						pos_hint: {'top':1}
+						size_hint: (1, 0.1)
+						# wat
+						text_size: self.size
+					
+					Label: 
+						text: '>'
+						bold: True
+						font_size: 30					
+						valign: 'middle'
+						halign: 'right'
+						pos_hint: {'top': 1}
+						size_hint: (1, 0.1)
+						# wat
+						text_size: self.size
+							
+						
+
+					Accordion:
+						orientation: 'vertical'
+						pos_hint: {'top': 0.9}
+						size_hint: (1, 0.9)
+						
+						AccordionItem:
+							title: 'Recent'
+
+							ListView:
+								item_strings: [str(index) for index in xrange(5)]
+
+						AccordionItem:
+							title: '2012'
+							
+							ListView:
+								item_strings: [str(index) for index in xrange(5)]
+						
+						AccordionItem:
+							title: '2011'
+							
+							ListView:
+								item_strings: [str(index) for index in xrange(5)]
 				
-				Label: 
-					text: '>'
-					bold: True
-					font_size: 30					
-					valign: 'middle'
-					halign: 'right'
-					pos_hint: {'top': 1}
-					size_hint: (1, 0.1)
-					# wat
-					text_size: self.size
 						
+							
+				# health profile
+				FloatLayout:
 					
-
-				Accordion:
-					orientation: 'vertical'
-					pos_hint: {'top': 0.9}
-					size_hint: (1, 0.9)
-					
-					AccordionItem:
-						title: 'Recent'
-
-						ListView:
-							item_strings: [str(index) for index in xrange(5)]
-
-					AccordionItem:
-						title: '2012'
+					Label: 
+						text: 'Health Profile'
+						bold: True
+						font_size: 30
+						halign: 'center'
+						valign: 'middle'
+						pos_hint: {'top':1}
+						size_hint: (1, 0.1)
+						# wat
+						text_size: self.size
 						
-						ListView:
-							item_strings: [str(index) for index in xrange(5)]
-					
-					AccordionItem:
-						title: '2011'
-						
-						ListView:
-							item_strings: [str(index) for index in xrange(5)]
-			
-					
-						
-			# health profile
-			FloatLayout:
-				
-				Label: 
-					text: 'Health Profile'
-					bold: True
-					font_size: 30
-					halign: 'center'
-					valign: 'middle'
-					pos_hint: {'top':1}
-					size_hint: (1, 0.1)
-					# wat
-					text_size: self.size
-					
-				Label: 
-					text: '<'
-					bold: True
-					font_size: 30
-					halign: 'left'
-					valign: 'middle'
-					pos_hint: {'top': 1}
-					size_hint: (1, 0.1)
-					# wat
-					text_size: self.size
+					Label: 
+						text: '<'
+						bold: True
+						font_size: 30
+						halign: 'left'
+						valign: 'middle'
+						pos_hint: {'top': 1}
+						size_hint: (1, 0.1)
+						# wat
+						text_size: self.size
 
-				Accordion:
-					pos_hint: {'top': 0.9}
-					size_hint: (1, 0.9)
-					orientation: 'vertical'
-						
-					AccordionItem:					
-						title: 'Basic Information'
-						
-						BoxLayout:
-							orientation: 'vertical'
-
-							Label:
-								text: 'Age: {}   Sex: {}   Weight: {}   Boold Type: {}'
-								
-							BoxLayout:
-								orientation: 'horizontal'
-								
-								Label:
-									text: 'Allergies: '
-								
-								ListView:
-									item_strings: [str(index) for index in xrange(5)]
+					Accordion:
+						pos_hint: {'top': 0.9}
+						size_hint: (1, 0.9)
+						orientation: 'vertical'
+							
+						AccordionItem:					
+							title: 'Basic Information'
 							
 							BoxLayout:
-								orientation: 'horizontal'
+								orientation: 'vertical'
+
+								Label:
+									text: 'Age: {}   Sex: {}   Weight: {}   Boold Type: {}'
+									
+								BoxLayout:
+									orientation: 'horizontal'
+									
+									Label:
+										text: 'Allergies: '
+									
+									ListView:
+										item_strings: [str(index) for index in xrange(5)]
+								
+								BoxLayout:
+									orientation: 'horizontal'
+									
+									Label:
+										text: 'Important Medical considerations: '
+									
+									ListView:
+										item_strings: [str(index) for index in xrange(5)]
+							
+						AccordionItem:					
+							title: 'Current Medical State'
+						
+						AccordionItem:
+							title: 'Illnesses'
+						
+						AccordionItem:
+							title: 'People'
+								
+							BoxLayout:
+								orientation: 'vertical'
+									
+								Label:
+									text: 'Emergency contact person: {}'
 								
 								Label:
-									text: 'Important Medical considerations: '
-								
-								ListView:
-									item_strings: [str(index) for index in xrange(5)]
-						
-					AccordionItem:					
-						title: 'Current Medical State'
-					
-					AccordionItem:
-						title: 'Illnesses'
-					
-					AccordionItem:
-						title: 'People'
+									text: 'Family Doctor: {}'	
 							
-						BoxLayout:
-							orientation: 'vertical'
-								
-							Label:
-								text: 'Emergency contact person: {}'
-							
-							Label:
-								text: 'Family Doctor: {}'	
-						
 
 
 
 
-	TabbedPanelItem:
-		text: 'Appointments'
+		TabbedPanelItem:
+			text: 'Appointments'
 
-		BoxLayout:
-			padding: 10
-			orientation: 'vertical'
-
-			# recent hosts. might change to "top" hosts and make a tree view
 			BoxLayout:
-				orientation: 'horizontal'
+				padding: 10
+				orientation: 'vertical'
 
-				Label:
-					text: 'Upcomming Appointments: '
-					size_hint: (0.4, 1)
+				# recent hosts. might change to "top" hosts and make a tree view
+				BoxLayout:
+					orientation: 'horizontal'
 
-				ListView:
-					item_strings: [str(index) for index in xrange(5)]
+					Label:
+						text: 'Upcomming Appointments: '
+						size_hint: (0.4, 1)
 
-			AnchorLayout:
-				size_hint_y: 0.2
-				anchor_x: 'center'
-				anchor_y: 'center'
-				
-				Button:
-					size_hint: (0.3, 0.5)
-					text: 'Schedule new appointment'
-						
+					ListView:
+						item_strings: [str(index) for index in xrange(5)]
+
+				AnchorLayout:
+					size_hint_y: 0.2
+					anchor_x: 'center'
+					anchor_y: 'center'
+					
+					Button:
+						size_hint: (0.3, 0.5)
+						text: 'Schedule new appointment'
+							
 
 
-	TabbedPanelItem:
-		text: 'eDoctor'
+		TabbedPanelItem:
+			text: 'eDoctor'
 
-		Label:
-			text: 'TODO'
+			Label:
+				text: 'TODO'
 
