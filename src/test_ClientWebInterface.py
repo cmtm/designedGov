@@ -20,7 +20,7 @@ class TestSequenceFunctions(unittest.TestCase):
 	def test_ping(self):
 		req = Request()
 		self.proc.stdout.readline()
-		resp = self.myClient.sendRequest('localhost', 10023, \
+		resp = self.myClient.sendRequestTo('localhost', 10023, \
 		                                 u'9F32383582053809', req)
 		self.assertTrue(resp.typeName == 'response')
 

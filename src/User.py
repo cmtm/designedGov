@@ -2,7 +2,11 @@ class User:
 	idLength = 64
 	keyLength = 1024
 	
-	def __init__(self, userId = 0, userPublicKey = 0, userPrivateKey = 0):
-		self.Id = userId
-		self.PublicKey = userPublicKey
-		self.PrivateKey = userPrivateKey
+	def __init__(self, idNum = None, cert = None, privKey = None):
+		self.idNum = idNum
+		self.cert = cert
+		self.privKey = privKey
+"""
+	def getIdHex(self):
+		return hex(self.idNum).zfill(self.idLength/4)
+"""

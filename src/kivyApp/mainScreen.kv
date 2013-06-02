@@ -22,9 +22,11 @@ Main:
 				Label:
 					text: 'Recent : '
 					size_hint_x: 0.3
-
-				MyListView:
-					data: ['b1','b2','b3']
+				
+				ButtonList:
+					displays: [h.name for h in app.hosts]
+					args: [h.name for h in app.hosts]
+					callback: app.connectToHost
 
 				Label:
 					size_hint_x: 0.3
@@ -37,9 +39,8 @@ Main:
 						
 					TextInput:
 						multiline: False
-						size_hint: (0.6, 0.2)
-						#pos_hint: {'center_y': 0.5}
-
+						size_hint: (0.6, None)
+						height: 30
 
 				BoxLayout:
 					size_hint_x: 0.3
@@ -59,8 +60,10 @@ Main:
 						valign: 'middle'
 					
 
-				ListView:
-					item_strings: [str(index) for index in xrange(5)]
+				ButtonList:
+					displays: ['None in range']
+					args: [None]
+					callback: lambda inst: inst
 
 
 
@@ -73,10 +76,6 @@ Main:
 				cols: 2
 				padding: 20
 				spacing: 20
-				
-
-				# recent hosts. might change to "top" hosts and make a tree view
-
 
 				Label:
 					text: 'Download file : '
@@ -86,15 +85,15 @@ Main:
 					multiline: False
 					hint_text: 'Enter URL'
 					size_hint_y: 0.2
+					on_text_validate: app.wget(self.text)
 
 				Label:
 					text: 'Browse local : '
 					size_hint_x: 0.3
 
-				# there is no button here, enter to connect
 				FileChooserListView:
-
-
+					rootpath: self.path
+			
 		TabbedPanelItem:
 			text: 'User Profile'
 
@@ -111,15 +110,16 @@ Main:
 						orientation: 'vertical'
 
 						Label: 
-							text: 'UserID: {}'
+							text: 'UserID: {}'.format(app.user.idNum)
 						Label:
-							text: 'Name: {}'
+							text: 'Name: {}'.format(app.userInfo['name'])
 						Label:
-							text: 'Birth date: {}'
+							text: 'Birth date: {}'.format(app.userInfo['birth'])
 						Label:
-							text: 'Sex: {}'
+							text: 'Sex: {}'.format(app.userInfo['sex'])
 					
 					Image:
+						source: app.userInfo['image']
 				
 				BoxLayout:
 					size_hint_y: None

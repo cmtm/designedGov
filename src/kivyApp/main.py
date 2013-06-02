@@ -3,67 +3,165 @@ kivy.require('1.7.0')
 
 #from kivy.uix.widget import Widget
 from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.tabbedpanel import TabbedPanel
 from kivy.uix.listview import ListView, ListItemButton
+from kivy.uix.scrollview import ScrollView
+from kivy.uix.button import Button
+from kivy.uix.popup import Popup
+from kivy.uix.label import Label
 from kivy.app import App
 from kivy.adapters.listadapter import ListAdapter
-from kivy.properties import ObjectProperty, StringProperty, ListProperty
+from kivy.properties import *
 from kivy.lang import Builder
+from kivy.clock import Clock
 
-class MyListView(ListView):
-	
-	
+import os, os.path
+import urllib2
+import yaml
 
-	data = ListProperty()
-	@staticmethod
-	def args_converter(row_index, obj):
-		return {'text': obj,
-		        'size_hint_y': None,
-		        'height':25}
-	
-	
-	
-	def on_data(self, instance, val):
-		list_adapter = ListAdapter(data=self.data,
-		                    args_converter=self.args_converter,
-		                    cls=ListItemButton,
-		                    selection_mode='single')
-		self.adapter = list_adapter
-		        
-	def __init__(self, **kwargs):		
-		super(MyListView, self).__init__()
-		
-        
-	
+# for import path extension
+import sys
+sys.path.append('../')
 
-		
+from ClientWebInterface import ClientWebInterface
+from User import User
+from Request import Request
+from Response import Response
+
+
+class ButtonList(AnchorLayout):
+	displays = ListProperty()
+	args = ListProperty()
+	callback = ObjectProperty()
+	
+	def __init__(self, **kwargs):
+		super(ButtonList, self).__init__(**kwargs)
+		Clock.schedule_once(self.late_init, 0)
+	
+	def late_init(self, *largs):
+		box = BoxLayout(orientation='vertical')
+		for (disp, arg) in zip(self.displays, self.args):
+			btn = Button(text=disp, size_hint_y=None, height=25)
+			btn.bind(on_press=lambda inst:self.callback(arg))
+			box.add_widget(btn)
+		scrollable = ScrollView(size_hint_x=0.7, do_scroll_x=False)
+		scrollable.add_widget(box)
+		self.add_widget(scrollable)    
+
 class Main(Screen):
-	hostList = ListProperty(['a1', 'a2', 'a3'])
-	
-class BeaconsfieldLibrary(Screen):
-	pass
-	
-class HealthCanada(Screen):
 	pass
 
-class ClientInterface(App):
-	def build(self):
-		kvFiles = ['mainScreen.kv', 
-		           'healthCanada.kv', 
+	# TODO: scan for local hosts and rescan on clock
+
+
+class HostInterface(Screen):
+	name = StringProperty()
+
+	hostId = StringProperty()
+	address = StringProperty()
+	port = NumericProperty()
+
+	def connect(self, cwi):
+		self.cwi = cwi
+		self.cwi.connectTo(self.address, self.port, self.hostId)
+		# send default request
+
+	def sendRequest(self, req):
+		return self.cwi.sendRequest(req)
+
+class BeaconsfieldLibrary(HostInterface):
+	pass
+	
+class HealthCanada(HostInterface):
+	pass
+
+class DemoInterface(App):
+	user = ObjectProperty()
+	userInfo = DictProperty({})
+	userList = ListProperty()
+	hosts = ListProperty()
+	socket = ObjectProperty()
+	
+	def connectToHost(self, hostName):
+		if hostName != None:
+			self.sm.current = hostName
+			self.sm.current_screen.connect(self.socket)
+	
+	def wget(self, url):
+		try:
+			f = urllib2.urlopen(url)		
+			localCopy = open(url.split('/')[-1], 'w')
+			localCopy.write(f.read())
+			localCopy.close()
+		except urllib2.URLError as e:
+			msg = "Error: {}".format(e.reason)
+		except IOError as e:
+			msg = "Error: {}".format(e.strerror)
+		else:
+			msg = "Download Successful."
+			
+		btnclose = Button(text='OK', size_hint_y=None, height='50sp')
+		content = BoxLayout(orientation='vertical')
+		content.add_widget(Label(text=msg))
+		content.add_widget(btnclose)
+		popup = Popup(content=content, title='File Download',
+		              size_hint=(None, None), size=('300dp', '300dp'))
+		btnclose.bind(on_release=popup.dismiss)
+		
+		popup.open()
+	
+	def __init__(self, **kwargs):		
+		super(DemoInterface, self).__init__(**kwargs)
+		
+		self.findUsers()		
+		# arbitrarily set first		
+		self.setUser(self.userList[0])
+		
+		# TODO: fix kludge
+		self.userInfo = {'name': 'Joe Blow', 'birth': '1985-06-08', 'sex': 'male', 'image': 'u '+self.userList[0]+'/portrait.png'}
+			
+	def findUsers(self):
+		dirs = [entry for entry in os.listdir('./') if os.path.isdir(entry)]
+		self.userList = [d[2:] for d in dirs if d[:2]=='u ']		
+	
+	def setUser(self, name):
+		usrDir = 'u '+name
+		ls = os.listdir(usrDir)
+		privKey = next(k for k in ls if '.pem' == k[-4:])
+		cert = next(k for k in ls if '.crt' == k[-4:])
+		self.user = User(name, 'u {}/{}'.format(name, cert), 'u {}/{}'.format(name, privKey))
+		# self.user = User(idNum, 'u{}/{}'.format(idNum, cert), 'u{}/{}'.format(idNum, privKey))
+		self.socket = ClientWebInterface(cert, 'CA.crt', privKey)
+		# TODO: user info functionality
+		# self.getUserInfo()
+	
+	def getUserInfo(self):		
+		req = Request(self.user.idNum)
+		req.addReadItem('')
+		
+		args = ('localhost', 1063, '0000000000000002', req)
+		resp = self.socket.sendRequestTo( *args)
+		# TODO: fix the kludge
+		userInfo = resp.tree["content"]
+
+	
+	def build(self):		           
+		self.sm = ScreenManager()
+		self.sm.add_widget(Builder.load_file('mainScreen.kv'))
+		
+		kvFiles = ['healthCanada.kv',
 		           'beaconsfieldLibrary.kv']
-		           
-		sm = ScreenManager()
+		
+		self.hosts = []
+		
 		for file in kvFiles:
-			sm.add_widget(Builder.load_file(file))
-		"""
-		sm.add_widget(Main(name='main'))
-		sm.add_widget(BeaconsfieldLibrary(name='library'))
-		sm.add_widget(HealthCanada(name='health'))
-		"""
+			host = Builder.load_file(file)
+			self.hosts.append(host)
+			self.sm.add_widget(host)
 
 		
-		return sm
+		return self.sm
 		
 		#return Builder.load_file('beaconsfieldLibrary.kv')
 		# return Builder.load_file('mainScreen.kv')
@@ -71,4 +169,4 @@ class ClientInterface(App):
 
 
 if __name__ == '__main__':
-    ClientInterface().run()
+    DemoInterface().run()
