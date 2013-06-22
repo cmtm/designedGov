@@ -1,4 +1,4 @@
-from DG_file import DG_file
+from dgobs import Dgob
 
 privateKey1 = """-----BEGIN RSA PRIVATE KEY-----
 MIIEpQIBAAKCAQEA6xySc9Eo/Ula75EurLPLMrfXr2IquSllfPCgNncnn7DG5NJ/
@@ -31,6 +31,6 @@ onwvLPt/juujKaBbjyQc/FseBOFMgedWpa7b7BJJhQtxs6KaKdNApSs=
 
 publicKey1 = """ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDrHJJz0Sj9SVrvkS6ss8syt9evYiq5KWV88KA2dyefsMbk0n8cjddyFNiSJggtZLcVp+JVb4KSRwYBUMDkG/UvmfypFmLAzFU0MhhjpY+/Qcr5Uo/mp42LYQA/KOwE3pJNYdtCncGZ6b/OB0MTrYnqrHV9UGcC6MDaoIL/HpTi5dHAzRZB65SIU8XiQQ9v4vfP3GgLLPE0Rsu1O5U0zPmPsplL2feUCyQ8xkV4bDZamegU3lr4H/bF3O/X3H0emxOv/NN12RTtc0eE3fNeX3M3WJuYTAcGzOYStBwZsB+iRtceztbFcp0ocJg8nzMwVljpHq7ywDjvk5PTj79LwWUr chris@FreeTower
 """
-myDG_file1 = DG_file("fakeType", authorId = 0, content = {"fakeEntryA": 65, "fakeEntryB": "helloWorld"})
-myDG_file1.addPublicKey(publicKey1)
-myDG_file1.sign(privateKey1)
+myDgob = Dgob("fakeType", authorId = 0, content = {"fakeEntryA": 65, "fakeEntryB": "helloWorld"})
+myDgob.addPublicKey(publicKey1)
+myDgob.sign(privateKey1)

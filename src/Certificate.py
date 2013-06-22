@@ -1,6 +1,6 @@
-from DG_file import DG_file
+from dgobs import Dgob
 
-class Certificate(DG_file):
+class Certificate(Dgob):
 	def __init__(self, authorId = 0, content = {}):
 		super().__init__("certificate", authorId, content)
 	
