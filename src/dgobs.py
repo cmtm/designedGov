@@ -16,7 +16,7 @@ class Dgob(object):
 	def __init__(self, authorId = 0, content = None):
 		# self.typeName should really be <className>.typeName
 		# this would require overriding __new__. I might do this later
-		self.tree = {"dG_type": self.typeName, "content": content, "author ID" : authorId}	
+		self.tree = {"dgob type": self.typeName, "content": content, "author ID" : authorId}	
 	
 	def sign(self, privateKey):
 
@@ -49,7 +49,7 @@ class Dgob(object):
 	def deserialize(cls, serialized):
 		tree = yaml.safe_load(serialized)
 		
-		if cls.typeName != None and cls.typeName != tree["dG_type"]:
+		if cls.typeName != None and cls.typeName != tree["dgob type"]:
 			raise WrongFileType()
 		
 		new_dG = cls(tree["author ID"], tree["content"])
@@ -77,7 +77,7 @@ class Request(Dgob):
 		self.tree["content"].append({"type": "write", "data path": data_path, "new value": new_value})
 	
 	def addAction(self, action_name, parameters = {}):
-		self.tree["content"].append({"type": "action call", "action name": action_name, "parameters": parameters})
+		self.tree["content"].append({"type": "action call", "name": action_name, "parameters": parameters})
 	
 	def getReqs(self):
 		return self.tree['content']
@@ -102,12 +102,51 @@ class Response(Dgob):
 		if not wasSuccessful:
 			self.tree["content"][-1]["failure cause"] = failureCause
 		
-	def addActionItem(self, response):
+	def addAction(self, wasSuccessful, failureCause = None, returned = ""):
 		self.tree["content"].append({"type": "action call", "was successful": wasSuccessful})
 		if wasSuccessful:
 			self.tree["content"][-1]["returned"] = returned
 		else:
 			self.tree["content"][-1]["failure cause"] = failureCause
 
+	def addUnrecognized(self):
+		self.tree["content"].append({"type": "unrecognized"})
+	
+	def addError(self, message = "Unknown Error"):
+		self.tree['content'].append({'type': 'error', 'message':message})
+	
 	def getResps(self):
 		return self.tree['content']
+
+class Template(Dgob):
+	typeName = "template"
+	
+	def __init__(self, authorId = 0, orgName = "", shortDesc = "", longDesc = None, dataMap = {}, actions = {}):
+		templateContent = {'organization name': orgName,
+		                   'short description': shortDesc, 
+		                   'data tree': dataMap, 
+		                   'actions': actions}
+		if longDesc != None:
+			templateContent['long description'] = longDesc
+			
+		super(Template, self).__init__(authorId, content=templateContent)
+	# path is a list of nodes needed to be traversed
+	def addData(self, path, dataType, isOptional = False, accessPolicy = None, description=None, children = {}):
+		newItem = {'type': dataType, 'is optional': isOptional}
+		if accessPolicy != None:
+			newItem['access policy'] = accessPolicy
+		if description != None:
+			newItem['description'] = description
+		if dataType == 'inode':
+			newItem['children'] = children
+		
+		parent = self.getNode(self.tree['content']['data tree'], path[:-1])
+		parent['children'][path[-1]] = newItem
+	
+	def getNode(self, root, path):
+		if len(path) == 1:
+			return root['children'][path[0]]
+		else:
+			return self.getNode(root['children'][path[0]], path[1:])
+	
+		

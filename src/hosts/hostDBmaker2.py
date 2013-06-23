@@ -1,6 +1,5 @@
 import sqlite3
-import inspect
-
+import os
 
 def makeSubDb(origFile, origTable, newFile, newTable, columns, primKey = None):
 	conn = sqlite3.connect(origFile)
@@ -28,17 +27,25 @@ def modifyColumnValue(dbFile, table, column, callback):
 
 	
 if __name__ == '__main__':
-	# makeSubDb('fakeIDs.db', 'fakenames', 'mySub', 'people', ['guid', 'givenname', 'surname'])
-	# modifyColumnName('mySub', 'people', 'guid', 'userID')
-	# modifyColumnValue('mySub', 'people', 'userID', lambda x: x[:8]+x[9:13]+x[14:18])
+
+	def changeDateFormat(d):
+		ds = d.split('/')
+		return ds[2]+'-'+ds[0]+'-'+ds[1]
+	
+	#needed to do once 
+	# modifyColumnValue('fakeIDs.db', 'fakenames', 'birthday', changeDateFormat)
+	
+	os.remove('certAuth.db')
 	makeSubDb('fakeIDs.db', 'fakenames', 'certAuth.db', 'people', ['guid', 'givenname', 'surname', 'birthday'])
 	modifyColumnName('certAuth.db', 'people', 'guid', 'userID')
 	modifyColumnValue('certAuth.db', 'people', 'userID', lambda x: x[:8]+x[9:13]+x[14:18])
 	
+	os.remove('generalInfo.db')
 	makeSubDb('fakeIDs.db', 'fakenames', 'generalInfo.db', 'people', ['guid', 'givenname', 'surname', 'birthday', 'gender', 'state', 'city', 'streetaddress', 'emailaddress'])
 	modifyColumnName('generalInfo.db', 'people', 'guid', 'userID')
 	modifyColumnValue('generalInfo.db', 'people', 'userID', lambda x: x[:8]+x[9:13]+x[14:18])
 	
+	os.remove('health.db')
 	makeSubDb('fakeIDs.db', 'fakenames', 'health.db', 'people', ['guid', 'givenname', 'surname', 'birthday', 'gender', 'bloodtype', 'kilograms', 'centimeters'])
 	modifyColumnName('health.db', 'people', 'guid', 'userID')
 	modifyColumnValue('health.db', 'people', 'userID', lambda x: x[:8]+x[9:13]+x[14:18])
