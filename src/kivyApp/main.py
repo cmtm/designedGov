@@ -20,14 +20,14 @@ import os, os.path
 import urllib2
 import yaml
 
+import pdb
 # for import path extension
 import sys
 sys.path.append('../')
 
 from ClientWebInterface import ClientWebInterface
-from User import User
-from Request import Request
-from Response import Response
+import User
+from dgobs import *
 
 
 class ButtonList(AnchorLayout):
@@ -119,7 +119,7 @@ class DemoInterface(App):
 		self.setUser(self.userList[0])
 		
 		# TODO: fix kludge
-		self.userInfo = {'name': 'Joe Blow', 'birth': '1985-06-08', 'sex': 'male', 'image': 'u '+self.userList[0]+'/portrait.png'}
+		# self.userInfo = {'name': 'Joe Blow', 'birth': '1985-06-08', 'sex': 'male', 'image': 'u '+self.userList[0]+'/portrait.png'}
 			
 	def findUsers(self):
 		dirs = [entry for entry in os.listdir('./') if os.path.isdir(entry)]
@@ -130,23 +130,23 @@ class DemoInterface(App):
 		ls = os.listdir(usrDir)
 		privKey = next(k for k in ls if '.pem' == k[-4:])
 		cert = next(k for k in ls if '.crt' == k[-4:])
-		self.user = User(name, 'u {}/{}'.format(name, cert), 'u {}/{}'.format(name, privKey))
-		# self.user = User(idNum, 'u{}/{}'.format(idNum, cert), 'u{}/{}'.format(idNum, privKey))
-		self.socket = ClientWebInterface(cert, 'CA.crt', privKey)
-		# TODO: user info functionality
-		# self.getUserInfo()
+		userDir = os.getcwd() + '/u {}/'.format(name)
+		self.user = User.User(name, '{}/{}'.format(userDir, cert), '{}/{}'.format(userDir, privKey))
+		self.socket = ClientWebInterface(userDir+cert, './CA.crt', userDir+privKey)
+		self.getUserInfo()
+		self.userInfo['portrait'] = userDir + 'portrait.png'
 	
 	def getUserInfo(self):		
 		req = Request(self.user.idNum)
-		req.addReadItem('')
+		req.addRead('')
 		
-		args = ('localhost', 1063, '0000000000000002', req)
+		args = ('localhost', 10001, u'9F32383582053809', req)
 		resp = self.socket.sendRequestTo( *args)
-		# TODO: fix the kludge
-		userInfo = resp.tree["content"]
-
+		# TODO: fix the kludges, add security
+		pdb.set_trace()
+		self.userInfo = resp.getResps()[0]['value read']
 	
-	def build(self):		           
+	def build(self):
 		self.sm = ScreenManager()
 		self.sm.add_widget(Builder.load_file('mainScreen.kv'))
 		
@@ -154,7 +154,6 @@ class DemoInterface(App):
 		           'beaconsfieldLibrary.kv']
 		
 		self.hosts = []
-		
 		for file in kvFiles:
 			host = Builder.load_file(file)
 			self.hosts.append(host)

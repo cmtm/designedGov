@@ -3,6 +3,8 @@ import Crypto.Hash.SHA512
 import Crypto.PublicKey.RSA
 import Crypto.Signature.PKCS1_v1_5
 
+import pdb
+
 import User
 
 class WrongFileType(Exception):
@@ -47,7 +49,7 @@ class Dgob(object):
 		
 	@classmethod
 	def deserialize(cls, serialized):
-		tree = yaml.safe_load(serialized)
+		tree = yaml.load(serialized)
 		
 		if cls.typeName != None and cls.typeName != tree["dgob type"]:
 			raise WrongFileType()
@@ -70,15 +72,21 @@ class Request(Dgob):
 	def __init__(self, authorId = 0, content = []):
 		super(Request, self).__init__(authorId, content)
 	
-	def addRead(self, data_path):
+	def addRead(self, data_path, otherUserID = None):
 		self.tree["content"].append({"type": "read", "data path": data_path})
-		
-	def addWrite(self, data_path, new_value):
+		if otherUserID != None:
+			self.tree["content"][-1]['other userID'] = otherUserID
+			
+	def addWrite(self, data_path, new_value, otherUserID = None):
 		self.tree["content"].append({"type": "write", "data path": data_path, "new value": new_value})
-	
-	def addAction(self, action_name, parameters = {}):
+		if otherUserID != None:
+			self.tree["content"][-1]['other userID'] = otherUserID
+			
+	def addAction(self, action_name, parameters = {}, otherUserID = None):
 		self.tree["content"].append({"type": "action call", "name": action_name, "parameters": parameters})
-	
+		if otherUserID != None:
+			self.tree["content"][-1]['other userID'] = otherUserID
+			
 	def getReqs(self):
 		return self.tree['content']
 	
@@ -90,7 +98,7 @@ class Response(Dgob):
 	def __init__(self, authorId = 0, content = []):
 		super(Response, self).__init__(authorId, content)
 	
-	def addRead(self, wasSuccessful, failureCause = None, valueRead = None):
+	def addRead(self, wasSuccessful, valueRead = None, failureCause = None):
 		self.tree["content"].append({"type": "read", "was successful": wasSuccessful})
 		if wasSuccessful:
 			self.tree["content"][-1]["value read"] = valueRead
@@ -121,7 +129,7 @@ class Response(Dgob):
 class Template(Dgob):
 	typeName = "template"
 	
-	def __init__(self, authorId = 0, orgName = "", shortDesc = "", longDesc = None, dataMap = {}, actions = {}):
+	def __init__(self, authorId = 0, orgName = "", shortDesc = "", longDesc = None, dataMap = {'children': {}}, actions = {}):
 		templateContent = {'organization name': orgName,
 		                   'short description': shortDesc, 
 		                   'data tree': dataMap, 
@@ -144,9 +152,29 @@ class Template(Dgob):
 		parent['children'][path[-1]] = newItem
 	
 	def getNode(self, root, path):
-		if len(path) == 1:
-			return root['children'][path[0]]
+		if len(path) == 0:
+			return root
 		else:
 			return self.getNode(root['children'][path[0]], path[1:])
+
+	def checkPolicy(self, path, policy, otherUser = None):
+		# TODO: support other user
+		# if no policy is exist, default behavior is to allow owner to read but not write
+		node = self.getNode(self.tree['content']['data tree'], path)
+		if 'access policy' not in node:
+			return policy == 'r'
+		elif (policy in node['access policy']):
+			return True
+		else:
+			return False
+		
+	# policy can be any item from this list: ['', 'r', 'w', 'rw']
+	def setAccessPolicy(self, path, user, policy):
+		n = self.getNode(self.tree['content']['data tree'], path)
+
+		if policy == '':
+			del n['access policy'][user]
+		else:
+			n['access policy'][user] = policy
 	
 		

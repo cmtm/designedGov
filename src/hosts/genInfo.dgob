@@ -1,0 +1,16 @@
+author ID: 0
+content:
+  actions: {}
+  data tree:
+    children:
+      birthday: {is optional: false, type: regular}
+      city: {is optional: false, type: regular}
+      emailaddress: {is optional: false, type: regular}
+      gender: {is optional: false, type: regular}
+      guid: {is optional: false, type: regular}
+      name: {is optional: false, type: regular}
+      state: {is optional: false, type: regular}
+      streetaddress: {is optional: false, type: regular}
+  organization name: general Information
+  short description: maintains general information on people
+dgob type: template

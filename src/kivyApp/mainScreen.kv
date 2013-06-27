@@ -114,12 +114,11 @@ Main:
 						Label:
 							text: 'Name: {}'.format(app.userInfo['name'])
 						Label:
-							text: 'Birth date: {}'.format(app.userInfo['birth'])
+							text: 'Birth date: {}'.format(app.userInfo['birthday'])
 						Label:
-							text: 'Sex: {}'.format(app.userInfo['sex'])
-					
+							text: 'Gender: {}'.format(app.userInfo['gender'])
 					Image:
-						source: app.userInfo['image']
+						source: app.userInfo['portrait']
 				
 				BoxLayout:
 					size_hint_y: None

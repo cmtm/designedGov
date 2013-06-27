@@ -4,10 +4,8 @@ from Host import Host
 
 
 class CertificateAuthority(Host):
-	
-	readables= {'name': 'name', 'certificate': 'certificate'}
-	writables= {}
+	pass
 		
 if __name__ == '__main__':
-	c = CertificateAuthority(10001, '../keysAndCerts/certificates/myCA.crt' , '../keysAndCerts/certificates/host1.crt', "TODO", 'certAuth.db', 'people')
+	c = CertificateAuthority(10000, '../keysAndCerts/certificates/myCA.crt' , '../keysAndCerts/certificates/host1.crt', "../keysAndCerts/keys/host1.pem", 'certAuth.dgob', 'certAuth', 'people')
 	c.listenForRequests()

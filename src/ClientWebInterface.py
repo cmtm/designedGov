@@ -1,9 +1,7 @@
 import socket, ssl
-from Response import Response
-from Request import Request
+import pdb
+from dgobs import *
 
-class InvalidCert(Exception):
-	pass
 
 class ClientWebInterface:
 	
@@ -34,14 +32,12 @@ class ClientWebInterface:
 		return Response.deserialize(data)
 	
 	def sendRequestTo(self, hostAddress, hostPort, hostUserID, request):
-		
 		self.ssl_sock.connect((hostAddress, hostPort))
 	
 		if self.ssl_sock.getpeercert()['subject'][0][0][1] != hostUserID:
-			raise InvalidCert("Certificate contains wrong userID")
+			raise ssl.CertificateError("Certificate contains wrong userID")
 		
 		self.ssl_sock.sendall(request.serialize())		
 		data = self.ssl_sock.recv(16384)		
 		self.ssl_sock.close()
-		
 		return Response.deserialize(data)
