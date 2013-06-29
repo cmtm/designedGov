@@ -5,14 +5,14 @@ from dgobs import *
 
 class ClientWebInterface:
 	
-	def __init__(self, certfile="certfile.crt", ca_cert="ca_cert.crt", keyfile="keyfile.pem"):
+	def __init__(self, user, ca_cert="ca_cert.crt"):
 		
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		
 		self.ssl_sock = ssl.wrap_socket(s,
-		                   certfile=certfile,
+		                   certfile=user.cert,
 		                   ca_certs=ca_cert,
-		                   keyfile=keyfile,
+		                   keyfile=user.privKey,
 		                   cert_reqs=ssl.CERT_REQUIRED)
 	
 	def connectTo(self, hostAddress, hostPort, hostUserID):

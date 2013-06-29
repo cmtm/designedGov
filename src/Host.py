@@ -40,7 +40,7 @@ class Host(object):
 	
 	def handleClient(self, connstream):
 		userID = connstream.getpeercert()['subject'][0][0][1]
-		# TODO: develop better implementation than a max recieve size
+		# TODO: develop better implementation than a max receive size
 		data = connstream.recv(16384)
 		req = dgobs.Request.deserialize(data)
 		resp = dgobs.Response()

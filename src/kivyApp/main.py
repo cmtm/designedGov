@@ -79,7 +79,6 @@ class HealthCanada(HostInterface):
 class DemoInterface(App):
 	user = ObjectProperty()
 	userInfo = DictProperty({})
-	userList = ListProperty()
 	hosts = ListProperty()
 	socket = ObjectProperty()
 	
@@ -113,26 +112,19 @@ class DemoInterface(App):
 	
 	def __init__(self, **kwargs):		
 		super(DemoInterface, self).__init__(**kwargs)
-		
-		self.findUsers()		
-		# arbitrarily set first		
-		self.setUser(self.userList[0])
-		
-		# TODO: fix kludge
-		# self.userInfo = {'name': 'Joe Blow', 'birth': '1985-06-08', 'sex': 'male', 'image': 'u '+self.userList[0]+'/portrait.png'}
 			
-	def findUsers(self):
+		self.loadUser()
+		
+		
+	def loadUser(self):
 		dirs = [entry for entry in os.listdir('./') if os.path.isdir(entry)]
-		self.userList = [d[2:] for d in dirs if d[:2]=='u ']		
-	
-	def setUser(self, name):
-		usrDir = 'u '+name
-		ls = os.listdir(usrDir)
+		userDir = next(d for d in dirs if d[:2]=='u ') + '/'
+		ls = os.listdir(userDir)
 		privKey = next(k for k in ls if '.pem' == k[-4:])
 		cert = next(k for k in ls if '.crt' == k[-4:])
-		userDir = os.getcwd() + '/u {}/'.format(name)
-		self.user = User.User(name, '{}/{}'.format(userDir, cert), '{}/{}'.format(userDir, privKey))
-		self.socket = ClientWebInterface(userDir+cert, './CA.crt', userDir+privKey)
+		self.user = User.User(userDir[2:-1], userDir+cert, userDir+privKey)
+		self.socket = ClientWebInterface(self.user, './CA.crt')
+		# surround with try-except
 		self.getUserInfo()
 		self.userInfo['portrait'] = userDir + 'portrait.png'
 	
