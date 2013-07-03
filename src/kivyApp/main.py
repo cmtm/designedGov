@@ -43,7 +43,7 @@ class ButtonList(AnchorLayout):
 		box = BoxLayout(orientation='vertical')
 		for (disp, arg) in zip(self.displays, self.args):
 			btn = Button(text=disp, size_hint_y=None, height=25)
-			btn.bind(on_press=lambda inst:self.callback(arg))
+			btn.bind(on_press=lambda inst, arg=arg:self.callback(arg))
 			box.add_widget(btn)
 		scrollable = ScrollView(size_hint_x=0.7, do_scroll_x=False)
 		scrollable.add_widget(box)
@@ -54,27 +54,48 @@ class Main(Screen):
 
 	# TODO: scan for local hosts and rescan on clock
 
+# custom default dict class
+class DefaultTree(dict):
+	
+	def __missing__(self, key):
+		return DefaultTree()
+	
+	def __repr__(self):
+		return "Data not found"
 
 class HostInterface(Screen):
+			
 	name = StringProperty()
 
 	hostId = StringProperty()
 	address = StringProperty()
 	port = NumericProperty()
+	d = ObjectProperty(DefaultTree())
 
 	def connect(self, cwi):
 		self.cwi = cwi
 		self.cwi.connectTo(self.address, self.port, self.hostId)
-		# send default request
+		self.postConnect()
+	
+	def postConnect(self):
+		pass
 
 	def sendRequest(self, req):
 		return self.cwi.sendRequest(req)
-
-class BeaconsfieldLibrary(HostInterface):
-	pass
 	
-class HealthCanada(HostInterface):
-	pass
+class HealthCanada(HostInterface):	
+	def postConnect(self):		
+		req = Request()
+		req.addRead('')
+		resp = self.cwi.sendRequest(req)
+		self.d = resp.getResps()[0]['value read']
+
+class BeaconsfieldLibrary(HostInterface):	
+	def postConnect(self):		
+		req = Request()
+		req.addRead('')
+		resp = self.cwi.sendRequest(req)
+		self.d = resp.getResps()[0]['value read']	
 
 class DemoInterface(App):
 	user = ObjectProperty()
@@ -135,7 +156,6 @@ class DemoInterface(App):
 		args = ('localhost', 10001, u'9F32383582053809', req)
 		resp = self.socket.sendRequestTo( *args)
 		# TODO: fix the kludges, add security
-		pdb.set_trace()
 		self.userInfo = resp.getResps()[0]['value read']
 	
 	def build(self):
@@ -154,7 +174,7 @@ class DemoInterface(App):
 		
 		return self.sm
 		
-		#return Builder.load_file('beaconsfieldLibrary.kv')
+		# return Builder.load_file('beaconsfieldLibrary.kv')
 		# return Builder.load_file('mainScreen.kv')
 		# return Builder.load_file('healthCanada.kv')
 

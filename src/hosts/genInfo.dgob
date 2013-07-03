@@ -3,14 +3,14 @@ content:
   actions: {}
   data tree:
     children:
-      birthday: {is optional: false, type: regular}
-      city: {is optional: false, type: regular}
-      emailaddress: {is optional: false, type: regular}
-      gender: {is optional: false, type: regular}
-      guid: {is optional: false, type: regular}
-      name: {is optional: false, type: regular}
-      state: {is optional: false, type: regular}
-      streetaddress: {is optional: false, type: regular}
-  organization name: general Information
+      birthday: {isOptional: false, type: regular}
+      citizenship: {isOptional: false, type: regular}
+      city: {isOptional: false, type: regular}
+      email address: {isOptional: true, type: regular}
+      gender: {isOptional: false, type: regular}
+      name: {isOptional: false, type: regular}
+      province: {isOptional: false, type: regular}
+      street address: {isOptional: false, type: regular}
+  organization name: general information
   short description: maintains general information on people
 dgob type: template

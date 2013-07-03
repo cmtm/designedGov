@@ -74,9 +74,11 @@ class Host(object):
 				
 		
 		if self.template.checkPolicy(path, 'r'):
-			pdb.set_trace()
-			#entry = self.dbCollection.find_one({'_id': userID.lower()}, {'.'.join(path):1, '_id': 0})
+			entry = self.dbCollection.find_one({'_id': userID.lower()})
 			# suppress projection to get working with root directory
+			# TODO: fix this
+			# entry = self.dbCollection.find_one({'_id': userID.lower()}, {'.'.join(path):1, '_id': 0})
+
 			return (True, traverseTree(entry, path))
 		else:
 			return (False, None, "data doesn't exist or can't be read")

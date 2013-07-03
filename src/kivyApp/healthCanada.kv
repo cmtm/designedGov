@@ -1,6 +1,6 @@
 HealthCanada:
 	name: 'Health Canada'
-	port: 10023
+	port: 10003
 	address: 'localhost'
 	hostId: u'9F32383582053809'
 	TabbedPanel:
@@ -49,19 +49,19 @@ HealthCanada:
 							title: 'Recent'
 
 							ListView:
-								item_strings: [str(index) for index in xrange(5)]
+								item_strings: ['what: {}   where: {}   when: {}'.format(a['event'], a['location'], a['date']) for a in root.d['history']]
 
 						AccordionItem:
 							title: '2012'
 							
 							ListView:
-								item_strings: [str(index) for index in xrange(5)]
+								item_strings: ['what: {}   where: {}   when: {}'.format(a['event'], a['location'], a['date']) for a in root.d['history']]
 						
 						AccordionItem:
 							title: '2011'
 							
 							ListView:
-								item_strings: [str(index) for index in xrange(5)]
+								item_strings: ['what: {}   where: {}   when: {}'.format(a['event'], a['location'], a['date']) for a in root.d['history']]
 				
 						
 							
@@ -102,7 +102,7 @@ HealthCanada:
 								orientation: 'vertical'
 
 								Label:
-									text: 'Age: {}   Gender: {}   Weight: {}   Blood Type: {}'
+									text: 'Height: {}   Weight: {}   Blood Type: {}'.format(root.d['basic']['height'], root.d['basic']['weight'], root.d['basic']['blood'])
 									
 								BoxLayout:
 									orientation: 'horizontal'
@@ -111,7 +111,7 @@ HealthCanada:
 										text: 'Allergies: '
 									
 									ListView:
-										item_strings: [str(index) for index in xrange(5)]
+										item_strings: ['{} ({})'.format(a['allergen'], a['severity']) for a in root.d['allergies']]
 								
 								BoxLayout:
 									orientation: 'horizontal'
@@ -120,13 +120,12 @@ HealthCanada:
 										text: 'Important Medical considerations: '
 									
 									ListView:
-										item_strings: [str(index) for index in xrange(5)]
-							
-						AccordionItem:					
-							title: 'Current Medical State'
+										item_strings: [c['description'] for c in root.d['considerations']]
 						
 						AccordionItem:
 							title: 'Illnesses'
+							ListView:
+								item_strings: [i['illness'] for i in root.d['illnesses']]
 						
 						AccordionItem:
 							title: 'People'
@@ -135,13 +134,10 @@ HealthCanada:
 								orientation: 'vertical'
 									
 								Label:
-									text: 'Emergency contact person: {}'
+									text: 'Emergency contact person: {}'.format(root.d['emergency contact'])
 								
 								Label:
-									text: 'Family Doctor: {}'	
-							
-
-
+									text: 'Family Doctor: {}'.format(root.d['family doctor'])
 
 
 		TabbedPanelItem:
@@ -157,10 +153,10 @@ HealthCanada:
 
 					Label:
 						text: 'Upcomming Appointments: '
-						size_hint: (0.4, 1)
+						size_hint: (0.23, 1)
 
 					ListView:
-						item_strings: [str(index) for index in xrange(5)]
+						item_strings: ['what: {}   where: {}   when: {}'.format(a['short reason'], a['location'], a['date']) for a in root.d['appointments']]
 
 				AnchorLayout:
 					size_hint_y: 0.2
@@ -177,5 +173,5 @@ HealthCanada:
 			text: 'eDoctor'
 
 			Label:
-				text: 'TODO'
+				text: 'Coming Soon.' # TODO
 

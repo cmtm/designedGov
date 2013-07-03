@@ -3,7 +3,8 @@ content:
   actions: {}
   data tree:
     children:
-      name: {is optional: false, type: regular}
+      certificate: {isOptional: false, type: regular}
+      name: {isOptional: false, type: regular}
   organization name: certificate authority
   short description: creates certificates for all users
 dgob type: template

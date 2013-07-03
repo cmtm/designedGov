@@ -1,26 +1,28 @@
 BeaconsfieldLibrary:
 	name: 'Beaconsfield Library'
+	port: 10002
+	address: 'localhost'
+	hostId: u'9F32383582053809'
 	BoxLayout:
 		orientation: 'vertical'
 
 		# recent hosts. might change to "top" hosts and make a tree view
 		BoxLayout:
+			padding: 20
 			orientation: 'horizontal'
 
 			Label:
+				size_hint_x: 0.2
 				text: 'Books on loan: '
 
 			ListView:
-				item_strings: [str(index) for index in xrange(5)]
+				item_strings: ['title: {}   date due: {}    fines: {:.2}'.format(b['title'], b['date due'], b['fines']) for b in root.d['books on loan']]
 
 		BoxLayout:
 			orientation: 'horizontal'
 
 			Label:
-				text: 'Ammount due: {}'.format('')
-
-			Label:
-				text: 'Date due: {}'.format('')
+				text: 'Amount due: $ {:.2}'.format(root.d['amount due'])
 			
 			Button:
 				text: 'Pay Now'

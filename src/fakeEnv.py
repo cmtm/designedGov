@@ -27,8 +27,11 @@ def makeUser(path, userID=None, privKey=None, cert=None):
 	
 	# can combine both of these into one call to mkdirs  (notice extra s)
 	# but haven't for clarity
-	os.mkdir(userFolder)
-	os.mkdir(userFolder+dG_files)
+	try:
+		os.mkdir(userFolder)
+		os.mkdir(userFolder+'dG_files')
+	except Exception:
+		pass
 	
 	if privKey == None:
 		# TODO: generate private key file
@@ -44,7 +47,7 @@ def makeUser(path, userID=None, privKey=None, cert=None):
 	f.write(privKey)
 	f.close()
 
-client1id = "3BFC8643C7AE9960"
+client1id = "3BFC8643C7AE9960".lower()
 
 client1cert = """\
 -----BEGIN CERTIFICATE-----
@@ -95,7 +98,7 @@ w9mwzhx8wMKFbuyuf8k=
 -----END CERTIFICATE-----
 """
 
-client2id = "49CC072B88A1AFDF"
+client2id = "49CC072B88A1AFDF".lower()
 
 client2key = """\
 -----BEGIN RSA PRIVATE KEY-----
@@ -115,7 +118,7 @@ wciX+DAkJqPKiat55FrTJ6kt0eDUzzTjXWLRSjrLWxTmyQ==
 -----END RSA PRIVATE KEY-----
 """
 
-host1id = "9F32383582053809"
+host1id = "9F32383582053809".lower()
 
 host1cert = """\
 -----BEGIN CERTIFICATE-----
@@ -175,53 +178,141 @@ if __name__ == '__main__':
 	makeUser('kivyApp/', userID=client2id, privKey=client2key, cert=client2cert)
 
 	# ---- make hosts ------
-		# certificate Authority host
-		dataMap = {
-			'children': {
-				'name': {'type': 'regular', 'isOptional': False},
-				'certificate': {'type': 'regular', 'isOptional':False}
-			}
+	# certificate Authority host
+	dataMap = {
+		'children': {
+			'name': {'type': 'regular', 'isOptional': False},
+			'certificate': {'type': 'regular', 'isOptional':False}
 		}
+	}
+			
+	makeTemplate(fileName = 'certAuth.dgob',
+				 orgName = 'certificate authority',
+				 shortDesc = 'creates certificates for all users',
+				 dataMap = dataMap)
+	clientData = []
+	clientData.append( {'_id': client1id, 'certificate': client1cert} )
+	clientData.append( {'_id': client2id, 'certificate': client2cert} )
+	makeHostDb('certAuth', 'people', clientData)
+
+	# general information host
+	dataMap = {
+		'children': {
+			'name': {'type': 'regular', 'isOptional': False},
+			'birthday': {'type': 'regular', 'isOptional':False},
+			'gender': {'type': 'regular', 'isOptional':False},
+			'province': {'type': 'regular', 'isOptional':False},
+			'city': {'type': 'regular', 'isOptional':False},
+			'street address': {'type': 'regular', 'isOptional':False},
+			'email address': {'type': 'regular', 'isOptional':True},
+			'citizenship': {'type': 'regular', 'isOptional':False}
+		}
+	}
+				 
+	makeTemplate(fileName = 'genInfo.dgob',
+				 orgName = 'general information',
+				 shortDesc = 'maintains general information on people',
+				 dataMap = dataMap)
+
+	clientData = []
+
+	clientData.append( {'_id': client1id, 'name': 'Joe Blow',
+						'birthday': '1983-04-13', 'gender': 'male', 
+						'province': 'QC', 'city': 'Westmount',
+						'street address': '132 fakestreet',
+						'citizenship': 'citizen'} )                
+	clientData.append( {'_id': client2id, 'name': 'Sue Streisand',
+				'birthday': '1993-06-01', 'gender': 'female', 
+				'province': 'AB', 'city': 'Calgary',
+				'street address': '7332 main',
+				'citizenship': 'citizen'} )
 				
-		makeTemplate(fileName = 'certAuth.dgob',
-		             orgName = 'certificate authority',
-		             shortDesc = 'creates certificates for all users',
-		             dataMap = dataMap)
-		clientData = []
-		clientData.append( {'_id': client1id, 'certificate': client1cert} )
-		clientData.append( {'_id': client2id, 'certificate': client2cert} )
-		makeHostDb('certAuth', 'people', clientData):
+	makeHostDb('genInfo', 'people', clientData)
+	
+	# health host
+	dataMap = {
+		'children': {
+			'basic': {'type': 'inode', 'isOptional': False, 'children':{
+				'weight': {'type': 'regular', 'isOptional':False},
+				'height': {'type': 'regular', 'isOptional':False},
+				'blood': {'type': 'regular', 'isOptional':False}}
+			},
+			'allergies': {'type': 'list', 'isOptional': False, 'children':{
+				'allergen': {'type': 'regular', 'isOptional':False},
+				'severity': {'type': 'regular', 'isOptional':False}}
+			},
+			'illnesses': {'type': 'list', 'isOptional': False, 'children':{
+				'illness': {'type': 'regular', 'isOptional':False}}
+			},
+			'considerations': {'type': 'list', 'isOptional': False, 'children': {
+				'issue code': {'type': 'regular', 'isOptional':False},
+				'description': {'type': 'regular', 'isOptional':False}}
+			},
+			'history': {'type': 'list', 'isOptional': False, 'children':{
+				'date': {'type': 'regular', 'isOptional':False},
+				'location': {'type': 'regular', 'isOptional':False},
+				'event': {'type': 'regular', 'isOptional':False}, # this could be elaborated
+				'medical professional': {'type': 'regular', 'isOptional':False}}
+			},
+			'appointments': {'type': 'list', 'isOptional': False, 'children':{
+				'date': {'type': 'regular', 'isOptional':False},
+				'location': {'type': 'regular', 'isOptional':False},
+				'short reason': {'type': 'regular', 'isOptional':False},
+				'medical professional': {'type': 'regular', 'isOptional':False}}
+			},
+			'family doctor': {'type': 'regular', 'isOptional':True},
+			'emergency contact': {'type': 'regular', 'isOptional':True}
+		}
+	}
+				 
+	makeTemplate(fileName = 'health.dgob',
+				 orgName = 'health canada',
+				 shortDesc = 'Provides health care to people',
+				 dataMap = dataMap)
 
-		# general information host
-		dataMap = {
-			'children': {
-				'name': {'type': 'regular', 'isOptional': False},
-				'birthday': {'type': 'regular', 'isOptional':False},
-				'gender': {'type': 'regular', 'isOptional':False},
-				'province': {'type': 'regular', 'isOptional':False},
-				'city': {'type': 'regular', 'isOptional':False},
-				'street address': {'type': 'regular', 'isOptional':False},
-				'email address': {'type': 'regular', 'isOptional':True},
-				'citizenship': {'type': 'regular', 'isOptional':False}
+	clientData = []
+
+	clientData.append( {'_id': client1id,
+		'basic': {'weight': 150, 'height': 170, 'blood': 'O-'},
+		'allergies': [{'allergen': 'seedless grapes', 'severity': 'life threatening'}],
+		'illnesses': [{'illness': 'athsma'}],
+		'considerations': [{'issue code': 02254, 'description': 'high cholesterol'}],
+		'history': [{'date': '2011-08-04', 'location': 'CLSC Pointe Claire', 'event': 'routine checkup', 'medical professional':'02947ab93ef94556'},
+		            {'date': '2011-01-06', 'location': 'Lakeshore Hospital', 'event':'sprained ankle', 'medical professional': '9de431237582a92b'}],
+		'appointments': [{'date': '2013-09-12', 'location': 'Sacred Heart Hospital', 'short reason': 'chest x-ray', 'medical professional': '039287235939843b'},
+		                 {'date': '2013-12-02', 'location': 'CLSC Pointe Claire', 'short reason': 'routine checkup', 'medical professional': '02947ab93ef94556'}],
+		'family doctor': '02947ab93ef94556',
+		'emergency contact': '7936a58ede922fed'
+	})
+	# TODO client2
+				
+	makeHostDb('health', 'people', clientData)
+
+
+	# library host
+	dataMap = {
+		'children': {
+			'amount due': {'type': 'regular', 'isOptional':False},
+			'books on loan': {'type': 'list', 'isOptional':False, 'children':{
+				'title': {'type': 'regular', 'isOptional':False},
+				'ISBN': {'type': 'regular', 'isOptional':False},
+				'date due': {'type': 'regular', 'isOptional':False},
+				'fines': {'type': 'regular', 'isOptional':False}}
 			}
 		}
-		             
-		makeTemplate(fileName = 'genInfo.dgob',
-		             orgName = 'general information',
-		             shortDesc = 'maintains general information on people',
-		             dataMap = dataMap)
+	}
+				 
+	makeTemplate(fileName = 'library.dgob',
+				 orgName = 'Beaconsfield Library',
+				 shortDesc = 'Beaconsfield city Library',
+				 dataMap = dataMap)
 
-		clientData = []
+	clientData = []
 
-		clientData.append( {'_id': client1id, 'name': 'Joe Blow',
-		                    'birthday': '1983-04-13', 'gender': 'male', 
-		                    'province': 'QC', 'city': 'Westmount',
-		                    'street address': '132 fakestreet',
-		                    'citizenship': 'citizen'} )                
-		clientData.append( {'_id': client2id, 'name': 'Sue Streisand',
-					'birthday': '1993-06-01', 'gender': 'female', 
-					'province': 'AB', 'city': 'Calgary',
-					'street address': '7332 main',
-					'citizenship': 'citizen'} )
-					
-		makeHostDb('genInfo', 'people', clientData):
+	clientData.append({'_id': client1id, 'amount due': 4.20, 'books on loan': [
+	   {'title':'The Golden Compass', 'ISBN':9780440238133, 'date due': '2013-07-15', 'fines': 0.00},
+	   {'title': 'The Cat in the Hat', 'ISBN':9780394800011, 'date due': '2013-08-01', 'fines': 0.00}]
+	})
+
+				
+	makeHostDb('library', 'people', clientData)

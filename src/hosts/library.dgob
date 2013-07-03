@@ -1,0 +1,17 @@
+author ID: 0
+content:
+  actions: {}
+  data tree:
+    children:
+      amount due: {isOptional: false, type: regular}
+      books on loan:
+        children:
+          ISBN: {isOptional: false, type: regular}
+          date due: {isOptional: false, type: regular}
+          fines: {isOptional: false, type: regular}
+          title: {isOptional: false, type: regular}
+        isOptional: false
+        type: list
+  organization name: Beaconsfield Library
+  short description: Beaconsfield city Library
+dgob type: template

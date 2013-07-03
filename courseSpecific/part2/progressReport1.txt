@@ -1,0 +1,39 @@
+= Progress Report 3
+Chris Morin <christopher.morin@mail.mcgill.ca>
+
+== General Information
+
+ID::
+	260344722
+
+Project title::
+	designedGov
+
+Project supervisor::
+	Bettina Kemme (Computer Science)
+
+
+== Supervisor meetings
+
+I met with Prof. Kemme at the beginning of the course and plan to meet with her this week provided she's available to showcase my work.
+
+== Project Reading
+
+I had to pick up basic database stuff so I had to read about SQL and SQLite. I then realized that a document based no-sql database might be better and read up on MongoDB. I needed to do some more SSL/TLS stuff to get the security working and I read how to use the kivy GUI language.
+
+
+== Recent Progress
+
+At this point, I've made a working virtual desginedGov "network" with hosts and a graphical client communicating. All communication is theoretically secure as it's over SSL and all identities are authenticated. An individual can use the GUI client interface to act as one of two fabricated individuals each with fabricated informatation. The hosts use a common library which greatly eases their development when they are simple read/write hosts (i.e. they don't have complicated operations on data). All operations are persistent as the hosts actually update the necessary data in their databases. So far, the certificate authority, general information and health canada hosts are made while a local library host is in the works.
+
+There are also simple file navigation and url file fetching in the GUI which don't do much now but I plan to expand on. 
+
+== Future Plans
+
+The hosts I have don't yet communicate with each other but that should be a simple step as all the framework for it is in place. I would like to make another host or two and add the dgob file (formally dGfile) functionality which allows a user to interact with dgob files without going through a host. Operations would be viewing/editing, signing/verifying signatures and sending/fetching.
+
+This is just a prototype so there is much more to do before it's anything close to fully fledged. Realistically though, I plan to spend most of the remaining time testing the GUI client on the public and receiving implementing their feedback about usability into my app.
+
+== Project Overview
+
+The goal of the second part of this project is to implement a virtual designedGov network as described in the first. This network consists of organizations, organization hosts, clients, and client interfaces. I'll make one client interface and a few hosts. They will all communicate securely and in a similar fashion to how they would in the real designedGov network. Once this is done, I plan to have individuals try using the client. I'll use feedback from them about it's useability to improve it. Hopefully I'll get to a point where the interface is very intuitive and most users would prefer it over the present pen and paper way of doing things now.
