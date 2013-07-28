@@ -1,0 +1,4 @@
+digraph G {
+	node [width=2.8];
+	"Client interface" -> "Server applications" -> "Communication protocol" -> "Certificate Authority" -> "User definition";
+}

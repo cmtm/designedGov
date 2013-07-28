@@ -1,0 +1,31 @@
+= Progress Report 2
+Chris Morin <christopher.morin@mail.mcgill.ca>
+
+== General Information
+
+ID::
+	260344722
+
+Project title::
+	designedGov
+
+Project supervisor::
+	Bettina Kemme (Computer Science)
+
+
+== Supervisor meetings
+
+I met with Prof. Kemme at the beginning of the course and plan to meet with her this week provided she's available to showcase my work.
+
+== Project Reading
+
+Not much thorough reading has been done since the end of the project is so close. I've used this time and plan to use the time I have left in implementation and creating documentation. In that effort, I have done reading into UML in order to better convey the ideas behind my project.
+
+== Recent Progress
+
+Since the beginning of the semester, I've made a working virtual desginedGov "network" with hosts and a graphical client communicating. In my last progress report, I described this. Since then, I've tested it out and changed it along with the designedGov standard to reflect what I've learned. I tested out the application to see that it was intuitive enough. This was less fruitful than I had hoped since what the user was able to do from the interface was a small reflexion of the whole system running in the background, and while the concept was interesting and the interface simple enough to be usable, the mock organization applications they were able to access were too simple to leave any kind of impression.
+
+
+== Future Plans
+
+From now until the end of the course, I'm going to focus on properly documenting my project. I've received feedback from several readers that while they understood the intentions of designedGov and read the protocols, they had a hard time seeing how these protocols come together to achieve what designedGov sets out to do. My supervisor and I feel that it's better to focus on clarifying this than spending more time expanding the virtual designGov network.
